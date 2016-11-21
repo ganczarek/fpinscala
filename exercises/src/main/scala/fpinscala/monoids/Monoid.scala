@@ -21,14 +21,26 @@ object Monoid {
     val zero = Nil
   }
 
-  val intAddition: Monoid[Int] = sys.error("todo")
+  val intAddition: Monoid[Int] = new Monoid[Int] {
+    override def op(a1: Int, a2: Int): Int = a1 + a2
+    override def zero: Int = 0
+  }
 
-  val intMultiplication: Monoid[Int] = sys.error("todo")
+  val intMultiplication: Monoid[Int] = new Monoid[Int] {
+    override def op(a1: Int, a2: Int): Int = a1 * a2
+    override def zero: Int = 1
+  }
 
-  val booleanOr: Monoid[Boolean] = sys.error("todo")
+  val booleanOr: Monoid[Boolean] = new Monoid[Boolean] {
+    override def op(a1: Boolean, a2: Boolean): Boolean = a1 || a2
+    override def zero: Boolean = false
+  }
 
-  val booleanAnd: Monoid[Boolean] = sys.error("todo")
-
+  val booleanAnd: Monoid[Boolean] = new Monoid[Boolean] {
+    override def op(a1: Boolean, a2: Boolean): Boolean = a1 && a2
+    override def zero: Boolean = true
+  }
+/*
   def optionMonoid[A]: Monoid[Option[A]] = sys.error("todo")
 
   def endoMonoid[A]: Monoid[A => A] = sys.error("todo")
@@ -72,7 +84,7 @@ object Monoid {
     sys.error("todo")
 
   def parFoldMap[A,B](v: IndexedSeq[A], m: Monoid[B])(f: A => B): Par[B] = 
-    sys.error("todo") 
+    sys.error("todo")
 
   val wcMonoid: Monoid[WC] = sys.error("todo")
 
@@ -89,6 +101,7 @@ object Monoid {
 
   def bag[A](as: IndexedSeq[A]): Map[A, Int] =
     sys.error("todo")
+*/
 }
 
 trait Foldable[F[_]] {
