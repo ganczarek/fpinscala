@@ -18,3 +18,5 @@ object IntAdditionSpec extends MonoidLawsSpec[Int]("intAddition", Monoid.intAddi
 object IntMultiplicationSpec extends MonoidLawsSpec[Int]("intMultiplication", Monoid.intMultiplication, Gen.choose(Int.MinValue, Int.MaxValue))
 object BooleanOrSpec extends MonoidLawsSpec[Boolean]("booleanOr", Monoid.booleanOr, Gen.oneOf(true, false))
 object BolleanAndSpec extends MonoidLawsSpec[Boolean]("booleanAnd", Monoid.booleanAnd, Gen.oneOf(true, false))
+object OptionIntMonoid extends MonoidLawsSpec[Option[Int]]("optionIntMonoid", Monoid.optionMonoid, Gen.option(Gen.choose(Int.MinValue, Int.MaxValue)))
+object OptionBoolMonoid extends MonoidLawsSpec[Option[Boolean]]("optionBoolMonoid", Monoid.optionMonoid, Gen.option(Gen.oneOf(true, false)))
