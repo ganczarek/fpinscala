@@ -55,11 +55,13 @@ object Monoid {
 
   def endoMonoid[A]: Monoid[A => A] = new Monoid[(A) => A] {
     override def op(f: (A) => A, g: (A) => A): (A) => A = f andThen g
+
     override def zero: (A) => A = Predef.identity
   }
 
   def flipEndoMonoid[A]: Monoid[A => A] = new Monoid[(A) => A] {
     override def op(f: (A) => A, g: (A) => A): (A) => A = g andThen f
+
     override def zero: (A) => A = Predef.identity
   }
 
@@ -69,11 +71,21 @@ object Monoid {
   def foldMap[A, B](as: List[A], m: Monoid[B])(f: A => B): B = as.foldLeft(m.zero)((x: B, y: A) => m.op(x, f(y)))
 
   def foldLeft[A, B](as: List[A])(z: B)(f: (B, A) => B): B =
-    Monoid.foldMap(as, Monoid.endoMonoid[B])(a => b => f(b,a))(z)
+    Monoid.foldMap(as, Monoid.endoMonoid[B])(a => b => f(b, a))(z)
 
   // andThen operation is not commutative, flip it (create dual of endoMonoid)
   def foldRight[A, B](as: List[A])(z: B)(f: (A, B) => B): B =
-  Monoid.foldMap(as, Monoid.flipEndoMonoid[B])(f.curried)(z)
+    Monoid.foldMap(as, Monoid.flipEndoMonoid[B])(f.curried)(z)
+
+  def foldMapV[A, B](as: IndexedSeq[A], m: Monoid[B])(f: A => B): B = {
+    as match {
+      case IndexedSeq() => m.zero
+      case IndexedSeq(x) => f(x)
+      case _ =>
+        val (left, right) = as.splitAt(as.size/2)
+        m.op(Monoid.foldMapV(left, m)(f), Monoid.foldMapV(right, m)(f))
+    }
+  }
 
   /*
   def trimMonoid(s: String): Monoid[String] = sys.error("todo")
@@ -81,8 +93,7 @@ object Monoid {
   def concatenate[A](as: List[A], m: Monoid[A]): A =
     sys.error("todo")
 
-  def foldMapV[A, B](as: IndexedSeq[A], m: Monoid[B])(f: A => B): B =
-    sys.error("todo")
+
 
   def ordered(ints: IndexedSeq[Int]): Boolean =
     sys.error("todo")
