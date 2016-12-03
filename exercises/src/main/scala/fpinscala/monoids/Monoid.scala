@@ -106,6 +106,26 @@ object Monoid {
     })
   }
 
+  def ordered(ints: IndexedSeq[Int]): Boolean = {
+    type ValueTrack = (Int, Int, Boolean, Boolean)
+    val trackingMonoid = new Monoid[Option[ValueTrack]] {
+      override def op(a1: Option[ValueTrack], a2: Option[ValueTrack]): Option[ValueTrack] = {
+        (a1, a2) match {
+          case (Some((min1, max1, isAscending1, isDescending1)), Some((min2, max2, isAscending2, isDescending2))) =>
+            val isAscending = isAscending1 && isAscending2 && max1 <= max2
+            val isDescending = isDescending1 && isDescending2 && min1 >= min2
+            Some(min1 min min2, max1 max max2, isAscending, isDescending)
+          case (None, a) => a
+          case (a, None) => a
+        }
+      }
+
+      override def zero: Option[ValueTrack] = None
+    }
+    foldMapV(ints, trackingMonoid)(i => Some(i, i, true, true)).forall(x => x._3 || x._4)
+  }
+
+
   /*
   def trimMonoid(s: String): Monoid[String] = sys.error("todo")
 
