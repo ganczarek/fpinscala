@@ -1,6 +1,7 @@
 package fpinscala.monoids
 
 // infix syntax for `Par.map`, `Par.flatMap`, etc
+import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
 trait Monoid[A] {
@@ -75,16 +76,34 @@ object Monoid {
 
   // andThen operation is not commutative, flip it (create dual of endoMonoid)
   def foldRight[A, B](as: List[A])(z: B)(f: (A, B) => B): B =
-    Monoid.foldMap(as, Monoid.flipEndoMonoid[B])(f.curried)(z)
+  Monoid.foldMap(as, Monoid.flipEndoMonoid[B])(f.curried)(z)
 
   def foldMapV[A, B](as: IndexedSeq[A], m: Monoid[B])(f: A => B): B = {
     as match {
       case IndexedSeq() => m.zero
       case IndexedSeq(x) => f(x)
       case _ =>
-        val (left, right) = as.splitAt(as.size/2)
+        val (left, right) = as.splitAt(as.size / 2)
         m.op(Monoid.foldMapV(left, m)(f), Monoid.foldMapV(right, m)(f))
     }
+  }
+
+  def par[A](m: Monoid[A]): Monoid[Future[A]] = new Monoid[Future[A]] {
+    implicit val ec = ExecutionContext.global
+
+    override def op(a1: Future[A], a2: Future[A]): Future[A] = for {
+      value1 <- a1
+      value2 <- a2
+    } yield m.op(value1, value2)
+
+    override def zero: Future[A] = Future(m.zero)
+  }
+
+  def parFoldMap[A, B](v: IndexedSeq[A], m: Monoid[B])(f: A => B): Future[B] = {
+    implicit val ec = ExecutionContext.global
+    foldMapV(v, par(m))((value: A) => Future {
+      f(value)
+    })
   }
 
   /*
@@ -103,12 +122,6 @@ object Monoid {
   case class Stub(chars: String) extends WC
 
   case class Part(lStub: String, words: Int, rStub: String) extends WC
-
-  def par[A](m: Monoid[A]): Monoid[Par[A]] =
-    sys.error("todo")
-
-  def parFoldMap[A, B](v: IndexedSeq[A], m: Monoid[B])(f: A => B): Par[B] =
-    sys.error("todo")
 
   val wcMonoid: Monoid[WC] = sys.error("todo")
 
