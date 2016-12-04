@@ -44,6 +44,16 @@ trait Monad[M[_]] extends Functor[M] {
 
   def replicateM[A](n: Int, ma: M[A]): M[List[A]] = traverse((1 to n).toList)(x => ma)
 
+  def filterM[A](ms: List[A])(f: A => M[Boolean]): M[List[A]] = ms match {
+    case Nil => unit(Nil)
+    case head :: tail => flatMap(f(head)) {
+      // keep the head and append to the filterM result of the tail
+      case true => map(filterM(tail)(f))(head :: _)
+      // filter out the head, continue filtering the rest of the list
+      case false => filterM(tail)(f)
+    }
+  }
+  
   def compose[A, B, C](f: A => M[B], g: B => M[C]): A => M[C] = ???
 
   // Implement in terms of `compose`:

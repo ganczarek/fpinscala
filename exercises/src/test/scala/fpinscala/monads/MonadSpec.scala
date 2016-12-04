@@ -57,6 +57,15 @@ class MonadSpec extends FunSpec with Matchers {
       Monad.listMonad.replicateM(2, List(1, 2)) should contain theSameElementsAs List(List(1, 1), List(1, 2), List(2, 1), List(2, 2))
     }
 
+    it("should filterM a list monad") {
+      val list = List(1, 2, 3, 4)
+      Monad.listMonad.filterM(list)(x => List(x > 2)) shouldBe List(List(3, 4))
+    }
+
+    it("should filterM a option monad") {
+      val list = List(1, 2, 3, 4)
+      Monad.optionMonad.filterM(list)(x => Some(x > 2)) shouldBe Some(List(3, 4))
+    }
   }
 
 }
