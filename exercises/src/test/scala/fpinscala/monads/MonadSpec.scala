@@ -31,6 +31,12 @@ class MonadSpec extends FunSpec with Matchers {
       val list = List(unit(1),unit(2),unit(3),unit(4))
       Monad.optionMonad.sequence(list) shouldBe unit(List(1,2,3,4))
     }
+
+    it("should replicate in monad") {
+      def unit(x: Any) = Monad.optionMonad.unit(x)
+      Monad.optionMonad.replicateM(5, unit(1)) shouldBe unit(List(1,1,1,1,1))
+      Monad.optionMonad.replicateM(5, unit(null)) shouldBe unit(null)
+    }
   }
 
 }
