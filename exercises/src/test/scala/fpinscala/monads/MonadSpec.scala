@@ -19,4 +19,18 @@ class MonadSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("Monadic combinators") {
+    it("should traverse") {
+      def unit(x: Any) = Monad.optionMonad.unit(x)
+      val list = List(1,2,3,4)
+      Monad.optionMonad.traverse(list)(unit(_)) shouldBe unit(list)
+    }
+
+    it("should combine list of monad instances into list monad") {
+      def unit(x: Any) = Monad.optionMonad.unit(x)
+      val list = List(unit(1),unit(2),unit(3),unit(4))
+      Monad.optionMonad.sequence(list) shouldBe unit(List(1,2,3,4))
+    }
+  }
+
 }
