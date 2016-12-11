@@ -17,6 +17,11 @@ class MonadSpec extends FunSpec with Matchers {
     it("should map two Options with map2, both None") {
       Monad.optionMonad.map2(None, None)((a: Int, b: String) => a.toString + b) shouldBe None
     }
+
+    it("should _flatMap with use of compose function") {
+      Monad.optionMonad._flatMap(Some(1))(i => Some(i+1)) shouldBe Some(2)
+      Monad.optionMonad._flatMap(None)(i => Some(1)) shouldBe None
+    }
   }
 
   describe("Monadic combinators") {
