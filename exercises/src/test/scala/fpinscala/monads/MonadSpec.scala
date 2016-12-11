@@ -67,10 +67,16 @@ class MonadSpec extends FunSpec with Matchers {
       Monad.listMonad.filterM(list)(x => List(x > 2)) shouldBe List(List(3, 4))
     }
 
-    it("should filterM a option monad") {
+    it("should filterM an option monad") {
       val list = List(1, 2, 3, 4)
       Monad.optionMonad.filterM(list)(x => Some(x > 2)) shouldBe Some(List(3, 4))
     }
+
+    it("should join two options") {
+      Monad.optionMonad.join(Some(Some(1))) shouldBe Some(1)
+      Monad.optionMonad.join(None) shouldBe None
+    }
+
   }
 
 }
