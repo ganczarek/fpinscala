@@ -13,10 +13,97 @@ class MonadLawsSpec[A, B, C, D, M[_]](val monad: Monad[M],
                                       val genC: Gen[C => M[D]])
   extends PropSpec with PropertyChecks with Matchers {
 
-  property("associativity law") {
+  import monad._
+
+  property("associativity law expressed with compose") {
     forAll(genA, genB, genC) {
       (x: A => M[B], y: B => M[C], z: C => M[D]) => forAll(valueGen) {
-        (value: A) => monad.compose(monad.compose(x, y), z).apply(value) shouldBe monad.compose(x, monad.compose(y, z)).apply(value)
+        (value: A) => compose(compose(x, y), z)(value) shouldBe compose(x, compose(y, z))(value)
+      }
+    }
+  }
+
+  property("left identity law expressed with compose") {
+    forAll(genA) {
+      (f: A => M[B]) => forAll(valueGen) {
+        (a: A) => compose(f, (x: B) => unit(x))(a) shouldBe f(a)
+      }
+    }
+  }
+
+  property("right identity law expressed with compose") {
+    forAll(genA) {
+      (f: A => M[B]) => forAll(valueGen) {
+        (a: A) => compose((x: A) => unit(x), f)(a) shouldBe f(a)
+      }
+    }
+  }
+}
+
+class MonadLawsSpecWithFlatMap[A, B, C, D, M[_]](val monad: Monad[M],
+                                                 val valueGen: Gen[A],
+                                                 val genA: Gen[A => M[B]],
+                                                 val genB: Gen[B => M[C]],
+                                                 val genC: Gen[C => M[D]])
+  extends PropSpec with PropertyChecks with Matchers {
+
+  import monad._
+
+  property("associativity law expressed with flatMap") {
+    forAll(genA, genB, genC) {
+      (x: A => M[B], y: B => M[C], z: C => M[D]) => forAll(valueGen) {
+        (value: A) => flatMap(x(value))(b => flatMap(y(b))(z)) shouldBe flatMap(flatMap(x(value))(y))(z)
+      }
+    }
+  }
+
+  property("left identity law expressed with flatMap") {
+    forAll(genA) {
+      (f: A => M[B]) => forAll(valueGen) {
+        (a: A) => flatMap(f(a))(unit(_)) shouldBe f(a)
+      }
+    }
+  }
+
+  property("right identity law expressed with flatMap") {
+    forAll(genA) {
+      (f: A => M[B]) => forAll(valueGen) {
+        (a: A) => flatMap(unit(a))(f) shouldBe f(a)
+      }
+    }
+  }
+}
+
+// flatMap is a map with join
+class MonadLawsSpecWithJoin[A, B, C, D, M[_]](val monad: Monad[M],
+                                              val valueGen: Gen[A],
+                                              val genA: Gen[A => M[B]],
+                                              val genB: Gen[B => M[C]],
+                                              val genC: Gen[C => M[D]])
+  extends PropSpec with PropertyChecks with Matchers {
+
+  import monad._
+
+  property("associativity law expressed with flatMap") {
+    forAll(genA, genB, genC) {
+      (x: A => M[B], y: B => M[C], z: C => M[D]) => forAll(valueGen) {
+        (value: A) => join(map(x(value))(b => join(map(y(b))(z)))) shouldBe join(map(join(map(x(value))(y)))(z))
+      }
+    }
+  }
+
+  property("left identity law expressed with flatMap") {
+    forAll(genA) {
+      (f: A => M[B]) => forAll(valueGen) {
+        (a: A) => join(map(f(a))(unit(_))) shouldBe f(a)
+      }
+    }
+  }
+
+  property("right identity law expressed with flatMap") {
+    forAll(genA) {
+      (f: A => M[B]) => forAll(valueGen) {
+        (a: A) => join(map(unit(a))(f)) shouldBe  f(a)
       }
     }
   }
@@ -48,7 +135,35 @@ class OptionMonadLawSpec extends MonadLawsSpec[Short, Int, Long, String, Option]
   MonadLawsSpec.longToStringLinearFunctionGen(Monad.optionMonad)
 )
 
+class OptionMonadLawSpecWithFlatMap extends MonadLawsSpecWithFlatMap[Short, Int, Long, String, Option](Monad.optionMonad,
+  Gen.choose(Short.MinValue, Short.MaxValue),
+  MonadLawsSpec.shortToIntLinearFunctionGen(Monad.optionMonad),
+  MonadLawsSpec.intToLongLinearFunctionGen(Monad.optionMonad),
+  MonadLawsSpec.longToStringLinearFunctionGen(Monad.optionMonad)
+)
+
+class OptionMonadLawSpecWithJoin extends MonadLawsSpecWithJoin[Short, Int, Long, String, Option](Monad.optionMonad,
+  Gen.choose(Short.MinValue, Short.MaxValue),
+  MonadLawsSpec.shortToIntLinearFunctionGen(Monad.optionMonad),
+  MonadLawsSpec.intToLongLinearFunctionGen(Monad.optionMonad),
+  MonadLawsSpec.longToStringLinearFunctionGen(Monad.optionMonad)
+)
+
 class ListMonadLawSpec extends MonadLawsSpec[Short, Int, Long, String, List](Monad.listMonad,
+  Gen.choose(Short.MinValue, Short.MaxValue),
+  MonadLawsSpec.shortToIntLinearFunctionGen(Monad.listMonad),
+  MonadLawsSpec.intToLongLinearFunctionGen(Monad.listMonad),
+  MonadLawsSpec.longToStringLinearFunctionGen(Monad.listMonad)
+)
+
+class ListMonadLawSpecWithFlatMap extends MonadLawsSpecWithFlatMap[Short, Int, Long, String, List](Monad.listMonad,
+  Gen.choose(Short.MinValue, Short.MaxValue),
+  MonadLawsSpec.shortToIntLinearFunctionGen(Monad.listMonad),
+  MonadLawsSpec.intToLongLinearFunctionGen(Monad.listMonad),
+  MonadLawsSpec.longToStringLinearFunctionGen(Monad.listMonad)
+)
+
+class ListMonadLawSpecWithJoin extends MonadLawsSpecWithJoin[Short, Int, Long, String, List](Monad.listMonad,
   Gen.choose(Short.MinValue, Short.MaxValue),
   MonadLawsSpec.shortToIntLinearFunctionGen(Monad.listMonad),
   MonadLawsSpec.intToLongLinearFunctionGen(Monad.listMonad),
