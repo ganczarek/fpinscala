@@ -4,6 +4,9 @@ import org.scalatest.{FunSpec, Matchers}
 
 import fpinscala.gettingstarted.MyModule.fib
 import fpinscala.gettingstarted.PolymorphicFunctions.isSorted
+import fpinscala.gettingstarted.PolymorphicFunctions.{compose, composeInScalaWay}
+import fpinscala.gettingstarted.PolymorphicFunctions.{curry, curryInScalaWay, uncurry, uncurryInScalaWay}
+
 
 class GettingStartedSpec extends FunSpec with Matchers {
 
@@ -65,4 +68,62 @@ class GettingStartedSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("curry function") {
+    it("should allow to curry one argument of two arguments function") {
+      val func = (a:Int, b:Int) => a * b
+      val curriedFunc = curry(func)(10)
+      curriedFunc(10) shouldBe 100
+      curriedFunc(5) shouldBe 50
+    }
+
+    it("scala way of currying a function") {
+      val func = (a:Int, b:Int) => a * b
+      val curriedFunc = curryInScalaWay(func)(10)
+      curriedFunc(10) shouldBe 100
+      curriedFunc(5) shouldBe 50
+    }
+  }
+
+  describe("uncurry function") {
+    it("should allow to uncurry a function") {
+      val func = (a:Int, b:Int) => a * b
+      val curriedFunc = func.curried
+      val uncurriedFunc = uncurry(curriedFunc)
+
+      for{
+        i <- 0 until 10
+        j <- 0 until 10
+      } uncurriedFunc(i,j) shouldBe func(i,j)
+    }
+
+    it("scala way to uncurry a function") {
+      val func = (a:Int, b:Int) => a * b
+      val curriedFunc = func.curried
+      val uncurriedFunc = uncurryInScalaWay(curriedFunc)
+
+      for{
+        i <- 0 until 10
+        j <- 0 until 10
+      } uncurriedFunc(i,j) shouldBe func(i,j)
+
+    }
+  }
+
+  describe("compose functions") {
+    it("should compose two functions") {
+      val doubleToInt = (x:Double) => x.toInt
+      val intToString = (x:Int) => x.toString
+
+      compose(intToString, doubleToInt)(10.23) shouldBe "10"
+      compose(intToString, doubleToInt)(5.0) shouldBe "5"
+    }
+
+    it("scala way to compose two functions") {
+      val doubleToInt = (x:Double) => x.toInt
+      val intToString = (x:Int) => x.toString
+
+      composeInScalaWay(intToString, doubleToInt)(10.23) shouldBe "10"
+      composeInScalaWay(intToString, doubleToInt)(5.0) shouldBe "5"
+    }
+  }
 }
