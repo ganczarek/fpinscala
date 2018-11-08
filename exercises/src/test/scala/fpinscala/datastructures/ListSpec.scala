@@ -39,4 +39,23 @@ class ListSpec extends FunSpec with Matchers {
       setHead(List(1, 2, 3, 4), "12") shouldBe List("12", 2, 3, 4)
     }
   }
+
+  describe("Exercise 3.4") {
+    it("drop should return empty list if a list is already empty") {
+      drop(List(), 10) shouldBe List()
+    }
+
+    it("drop should return empty list if dropping more object than in the list") {
+      drop(List(1, 2, 3), 10) shouldBe List()
+    }
+
+    it("drop should do thing if dropping 0 elements") {
+      drop(List(1, 2, 3), 0) shouldBe List(1, 2, 3)
+    }
+
+    it("drop should remove first n elements of the list") {
+      drop(List(1, 2, 3), 1) shouldBe List(2, 3)
+      drop(List(1, 2, 3), 2) shouldBe List(3)
+    }
+  }
 }
