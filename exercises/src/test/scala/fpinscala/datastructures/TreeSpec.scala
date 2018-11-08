@@ -33,4 +33,19 @@ class TreeSpec extends FunSpec with Matchers {
       depth(testTree) shouldBe 3
     }
   }
+
+  describe("Exercise 3.28") {
+    it("map implementation for trees") {
+      map(testTree)(_.toString) shouldBe Branch(
+        Leaf("1"),
+        Branch(
+          Branch(
+            Leaf("2"),
+            Leaf("3")
+          ),
+          Leaf("4")
+        )
+      )
+    }
+  }
 }
