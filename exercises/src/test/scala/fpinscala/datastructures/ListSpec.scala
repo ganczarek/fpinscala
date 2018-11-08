@@ -1,6 +1,6 @@
 package fpinscala.datastructures
 
-import fpinscala.datastructures.List._
+import fpinscala.datastructures.List.{length => exerciseLength, _}
 import org.scalatest.{FunSpec, Matchers}
 
 class ListSpec extends FunSpec with Matchers {
@@ -93,7 +93,6 @@ class ListSpec extends FunSpec with Matchers {
   }
 
   describe("Exercise 3.9") {
-    import fpinscala.datastructures.List.{length => exerciseLength}
 
     it("length should return 0 for an empty list") {
       exerciseLength(List()) shouldBe 0
@@ -112,4 +111,37 @@ class ListSpec extends FunSpec with Matchers {
       foldLeft(List(1, 2, 3, 4), z)(op) shouldBe Seq(1, 2, 3, 4).foldLeft(z)(op)
     }
   }
+
+  describe("Exercise 3.11") {
+    it("sum function implemented with use of foldLeft") {
+      Seq(
+        List(),
+        List(1),
+        List(1, 2, 3, 4)
+      ) foreach {
+        l => sumWithFoldLeft(l) shouldBe sum(l)
+      }
+    }
+
+    it("product function implemented with use of foldLeft") {
+      Seq(
+        List(),
+        List(1.0),
+        List(1.0, 2.0, 3.0, 4.0, 5.0)
+      ) foreach {
+        l => productWithFoldLeft(l) shouldBe product(l)
+      }
+    }
+
+    it("length function implemented with use of foldLeft") {
+      Seq(
+        List(),
+        List(1),
+        List(1, 2, 3, 4)
+      ) foreach {
+        l => lengthWithFoldLeft(l) shouldBe exerciseLength(l)
+      }
+    }
+  }
+
 }
