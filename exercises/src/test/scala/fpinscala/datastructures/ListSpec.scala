@@ -144,4 +144,18 @@ class ListSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("Exercise 3.12") {
+    it("reverse should do nothing with an empty list") {
+      reverse(List()) shouldBe List()
+    }
+
+    it("reverse should return same list when length of the list is 1") {
+      reverse(List(1)) shouldBe List(1)
+    }
+
+    it("reverse should reverse a list") {
+      reverse(List(1, 2, 3, 4)) shouldBe List(4, 3, 2, 1)
+    }
+  }
+
 }
