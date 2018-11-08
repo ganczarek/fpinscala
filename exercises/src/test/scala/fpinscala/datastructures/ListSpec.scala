@@ -70,7 +70,7 @@ class ListSpec extends FunSpec with Matchers {
     }
 
     it("dropWhile should halt when predicate is not matched") {
-      dropWhile(List(1, 2, 3, 4, 5, 6), (x: Int) => x < 4) shouldBe List(5, 6)
+      dropWhile(List(1, 2, 3, 4, 5, 6), (x: Int) => x < 4) shouldBe List(4, 5, 6)
     }
 
     it("dropWhile when first element matches the predicate") {
@@ -156,6 +156,33 @@ class ListSpec extends FunSpec with Matchers {
     it("reverse should reverse a list") {
       reverse(List(1, 2, 3, 4)) shouldBe List(4, 3, 2, 1)
     }
+  }
+
+  describe("Exercise 3.13") {
+    it("foldLeft implemented with foldRight") {
+      val z = 1
+      val op = (a:Int ,b:Int) => a * b
+      Seq(
+        List(1),
+        List(1,2,3,4)
+      ) foreach {
+        l => foldLeftWithFoldRight(l, z)(op) shouldBe foldLeft(l, z)(op)
+      }
+    }
+
+    it("foldRight implemented with foldLeft") {
+      val z = 1
+      val op = (a:Int ,b:Int) => a * b
+      Seq(
+        List(),
+        List(1),
+        List(1,2,3,4)
+      ) foreach {
+        l => foldRightWithFoldLeft(l, z)(op) shouldBe foldLeft(l, z)(op)
+      }
+    }
+
+
   }
 
 }
