@@ -254,4 +254,32 @@ class ListSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("Exercise 3.24") {
+    it("empty list is subsequence of any list") {
+      hasSubsequence(List(1, 2, 3), List()) shouldBe true
+    }
+
+    it("empty list has only one subsequence") {
+      hasSubsequence(List(), List()) shouldBe true
+      hasSubsequence(List(), List(1)) shouldBe false
+    }
+
+    it("hasSubsequence should detect subsequences of length 1") {
+      hasSubsequence(List(1, 2, 3, 4), List(1)) shouldBe true
+    }
+
+    it("hasSubsequence a list it's own subsequence") {
+      hasSubsequence(List(1, 2, 3), List(1, 2, 3)) shouldBe true
+    }
+
+    it("hasSubsequence should detect lack of subsequence") {
+      hasSubsequence(List(1, 2, 3, 4), List(4, 3)) shouldBe false
+    }
+
+    it("hasSubsequence should detect subsequences correctly") {
+      hasSubsequence(List(1, 2, 3, 4), List(2, 3)) shouldBe true
+      hasSubsequence(List(1, 2, 3, 4), List(2, 3, 4)) shouldBe true
+    }
+  }
+
 }
