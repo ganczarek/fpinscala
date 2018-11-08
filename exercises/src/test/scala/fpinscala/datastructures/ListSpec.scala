@@ -58,4 +58,23 @@ class ListSpec extends FunSpec with Matchers {
       drop(List(1, 2, 3), 2) shouldBe List(3)
     }
   }
+
+  describe("Exercise 3.5") {
+    it("dropWhile should return empty list if a list is already empty") {
+      dropWhile(List(), (_: Any) => true) shouldBe List()
+      dropWhile(List(), (_: Any) => false) shouldBe List()
+    }
+
+    it("dropWhile should remove all elements if predicate is always true") {
+      dropWhile(List(1, 2, 3), (_: Any) => true) shouldBe List()
+    }
+
+    it("dropWhile should halt when predicate is not matched") {
+      dropWhile(List(1, 2, 3, 4, 5, 6), (x: Int) => x < 4) shouldBe List(5, 6)
+    }
+
+    it("dropWhile when first element matches the predicate") {
+      dropWhile(List(1, 2, 3, 4, 5, 6), (x: Int) => x > 4) shouldBe List(1, 2, 3, 4, 5, 6)
+    }
+  }
 }
