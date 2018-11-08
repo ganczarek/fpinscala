@@ -221,4 +221,10 @@ class ListSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("Exercise 3.19") {
+    it("remove all odd numbers from a list") {
+      filter(List(1, 2, 3, 4, 5, 6))(_ % 2 == 0) shouldBe List(2, 4, 6)
+    }
+  }
+
 }
