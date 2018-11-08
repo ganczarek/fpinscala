@@ -199,4 +199,10 @@ class ListSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("Exercise 3.16") {
+    it("add 1 to all elements in the list") {
+      addOneToAllElements(List(1, 2, 3)) shouldBe List(2, 3, 4)
+    }
+  }
+
 }
