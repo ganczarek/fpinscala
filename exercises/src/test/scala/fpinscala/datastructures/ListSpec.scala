@@ -205,4 +205,10 @@ class ListSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("Exercise 3.17") {
+    it("convert list of doubles to list of strings") {
+      listOfDoublesToListOfStrings(List(1.0, 2.0, 3.0)) shouldBe List("1.0", "2.0", "3.0")
+    }
+  }
+
 }
