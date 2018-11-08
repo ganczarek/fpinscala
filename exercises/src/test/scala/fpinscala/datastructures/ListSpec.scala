@@ -77,4 +77,18 @@ class ListSpec extends FunSpec with Matchers {
       dropWhile(List(1, 2, 3, 4, 5, 6), (x: Int) => x > 4) shouldBe List(1, 2, 3, 4, 5, 6)
     }
   }
+
+  describe("Exercise 3.6") {
+    it("init should drop last element of the list") {
+      init(List(1,2,3,4,5)) shouldBe List(1,2,3,4)
+    }
+
+    it("init should return an empty list when list has a single element") {
+      init(List(1)) shouldBe List()
+    }
+
+    it("init should return an empty list when list is already empty") {
+      init(List()) shouldBe List()
+    }
+  }
 }
