@@ -161,10 +161,10 @@ class ListSpec extends FunSpec with Matchers {
   describe("Exercise 3.13") {
     it("foldLeft implemented with foldRight") {
       val z = 1
-      val op = (a:Int ,b:Int) => a * b
+      val op = (a: Int, b: Int) => a * b
       Seq(
         List(1),
-        List(1,2,3,4)
+        List(1, 2, 3, 4)
       ) foreach {
         l => foldLeftWithFoldRight(l, z)(op) shouldBe foldLeft(l, z)(op)
       }
@@ -172,17 +172,25 @@ class ListSpec extends FunSpec with Matchers {
 
     it("foldRight implemented with foldLeft") {
       val z = 1
-      val op = (a:Int ,b:Int) => a * b
+      val op = (a: Int, b: Int) => a * b
       Seq(
         List(),
         List(1),
-        List(1,2,3,4)
+        List(1, 2, 3, 4)
       ) foreach {
         l => foldRightWithFoldLeft(l, z)(op) shouldBe foldLeft(l, z)(op)
       }
     }
+  }
 
+  describe("Exercise 3.14") {
+    it("append implemented with foldRight should do nothing when appending an empty list") {
+      appendWithFoldRight(List(1, 2, 3), List()) shouldBe List(1, 2, 3)
+    }
 
+    it("append implemented with foldRight should append two lists") {
+      appendWithFoldRight(List(1, 2, 3), List(4, 5, 6)) shouldBe List(1, 2, 3, 4, 5, 6)
+    }
   }
 
 }
