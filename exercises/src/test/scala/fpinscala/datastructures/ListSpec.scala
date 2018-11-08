@@ -243,14 +243,14 @@ class ListSpec extends FunSpec with Matchers {
     }
   }
 
-  describe("Exercise 3.22") {
-    it("addElements should add corresponding elements of two lists") {
-      addElements(List(1, 2, 3), List(1, 2, 3))(_ + _) shouldBe List(2, 4, 6)
+  describe("Exercise 3.22/2.23") {
+    it("zipWith should add corresponding elements of two lists") {
+      zipWith(List(1, 2, 3), List(1, 2, 3))(_ + _) shouldBe List(2, 4, 6)
     }
 
     it("addElements should ignore elements for which there's nothing to be added") {
-      addElements(List(1, 2, 3), List(1, 2))(_ + _) shouldBe List(2, 4)
-      addElements(List(1, 2), List(1, 2, 3))(_ + _) shouldBe List(2, 4)
+      zipWith(List(1, 2, 3), List(1, 2))(_ + _) shouldBe List(2, 4)
+      zipWith(List(1, 2), List(1, 2, 3))(_ + _) shouldBe List(2, 4)
     }
   }
 
