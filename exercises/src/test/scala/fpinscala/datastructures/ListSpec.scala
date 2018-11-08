@@ -193,4 +193,10 @@ class ListSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("Exercise 3.15") {
+    it("concatenate list of lists") {
+      concat(List(List(1, 2), List(), List(3), List(), List(4, 5))) shouldBe List(1, 2, 3, 4, 5)
+    }
+  }
+
 }
