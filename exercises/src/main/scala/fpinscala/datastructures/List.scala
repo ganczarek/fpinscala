@@ -91,7 +91,7 @@ object List { // `List` companion object. Contains functions for creating and wo
     }
   }
 
-  def length[A](l: List[A]): Int = sys.error("todo")
+  def length[A](l: List[A]): Int = foldRight(l, 0)((_, acc) => 1 + acc)
 
   def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = sys.error("todo")
 

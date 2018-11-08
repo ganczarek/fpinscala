@@ -80,7 +80,7 @@ class ListSpec extends FunSpec with Matchers {
 
   describe("Exercise 3.6") {
     it("init should drop last element of the list") {
-      init(List(1,2,3,4,5)) shouldBe List(1,2,3,4)
+      init(List(1, 2, 3, 4, 5)) shouldBe List(1, 2, 3, 4)
     }
 
     it("init should return an empty list when list has a single element") {
@@ -89,6 +89,19 @@ class ListSpec extends FunSpec with Matchers {
 
     it("init should return an empty list when list is already empty") {
       init(List()) shouldBe List()
+    }
+  }
+
+  describe("Exercise 3.9") {
+    import fpinscala.datastructures.List.{length => exerciseLength}
+
+    it("length should return 0 for an empty list") {
+      exerciseLength(List()) shouldBe 0
+    }
+
+    it("length should return length of a non-empty list") {
+      exerciseLength(List(1)) shouldBe 1
+      exerciseLength(List(1, 2, 3, 4, 5)) shouldBe 5
     }
   }
 }
