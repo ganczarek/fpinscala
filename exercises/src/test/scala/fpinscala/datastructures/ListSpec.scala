@@ -104,4 +104,12 @@ class ListSpec extends FunSpec with Matchers {
       exerciseLength(List(1, 2, 3, 4, 5)) shouldBe 5
     }
   }
+
+  describe("Exercise 3.10") {
+    it("foldLeft should work and be (hopefully - not test here) stack-safe") {
+      val z = 2
+      val op = (a: Int, b: Int) => a * b
+      foldLeft(List(1, 2, 3, 4), z)(op) shouldBe Seq(1, 2, 3, 4).foldLeft(z)(op)
+    }
+  }
 }
