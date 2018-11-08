@@ -211,4 +211,14 @@ class ListSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("Exercise 3.18") {
+    it("map should be able to do what was in Exercise 3.16") {
+      map(List(1, 2, 3))(_ + 1) shouldBe List(2, 3, 4)
+    }
+
+    it("map should be able to do what was in Exercise 3.17") {
+      map(List(1.0, 2.0, 3.0))(_.toString) shouldBe List("1.0", "2.0", "3.0")
+    }
+  }
+
 }
