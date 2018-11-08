@@ -227,4 +227,14 @@ class ListSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("Exercise 3.20") {
+    it("implement flatMap with foldRight") {
+      flatMap(List(1, 2, 3))(i => List(i, i)) shouldBe List(1, 1, 2, 2, 3, 3)
+    }
+
+    it("implement flatMap with map and concat") {
+      flatMap_2(List(1, 2, 3))(i => List(i, i)) shouldBe List(1, 1, 2, 2, 3, 3)
+    }
+  }
+
 }
