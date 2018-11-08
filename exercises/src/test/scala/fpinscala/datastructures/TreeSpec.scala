@@ -28,4 +28,9 @@ class TreeSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("Exercise 3.27") {
+    it("depth should return max length of the path from root to any leaf in the tree") {
+      depth(testTree) shouldBe 3
+    }
+  }
 }
