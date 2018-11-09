@@ -116,5 +116,4 @@ class OptionSpec extends FlatSpec with Matchers {
     Option.traverse(List(1, 2, 3, 4))(a => Some(a * 2)) shouldBe Some(List(2, 4, 6, 8))
   }
 
-
 }
