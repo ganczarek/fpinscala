@@ -65,4 +65,30 @@ class OptionSpec extends FlatSpec with Matchers {
     Option.variance(testSeq) shouldBe Some(1.0)
   }
 
+  behavior of "Exercise 4.3"
+
+  "Option.map2" should "return None if any of input values is None" in {
+    val op = (_: Int, _: Int) => 1
+    Option.map2(None, None)(op) shouldBe None
+    Option.map2(None, Some(1))(op) shouldBe None
+    Option.map2(Some(1), None)(op) shouldBe None
+  }
+
+  "Option.map2" should "combine two values wrapped in Some object" in {
+    Option.map2(Some(2), Some(2.0))(_ * _) shouldBe Some(4.0)
+  }
+
+  "Option.map2_2" should "return None if any of input values is None" in {
+    val op = (_: Int, _: Int) => 1
+    Option.map2_2(None, None)(op) shouldBe None
+    Option.map2_2(None, Some(1))(op) shouldBe None
+    Option.map2_2(Some(1), None)(op) shouldBe None
+  }
+
+  "Option.map2_2" should "combine two values wrapped in Some object" in {
+    Option.map2_2(Some(2), Some(2.0))(_ * _) shouldBe Some(4.0)
+  }
+
+
+
 }
