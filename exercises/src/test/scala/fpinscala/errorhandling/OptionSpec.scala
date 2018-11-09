@@ -89,6 +89,18 @@ class OptionSpec extends FlatSpec with Matchers {
     Option.map2_2(Some(2), Some(2.0))(_ * _) shouldBe Some(4.0)
   }
 
+  behavior of "Exercise 4.4"
+
+  "Option.sequence" should "return None if a single object in a sequence is None" in {
+    Option.sequence(List(None)) shouldBe None
+    Option.sequence(List(None, Some(1))) shouldBe None
+    Option.sequence(List(Some(1), None)) shouldBe None
+    Option.sequence(List(Some(1), None, Some(2))) shouldBe None
+  }
+
+  "Option.sequence" should "return wrapped List of all list elements when no None in the list" in {
+    Option.sequence(List(Some(1), Some(2), Some(3))) shouldBe Some(List(1, 2, 3))
+  }
 
 
 }
