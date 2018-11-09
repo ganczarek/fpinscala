@@ -42,4 +42,10 @@ class StreamSpec extends FlatSpec with Matchers {
     Stream(1, 2, 3, 4).drop(20) shouldBe Empty
   }
 
+  behavior of "Exercise 5.3"
+
+  "Stream.takeWhile" should "return all starting elements that match a predicate" in {
+    Stream(1, 2, 3, 4).takeWhile(_ < 3).toList shouldBe List(1, 2)
+  }
+
 }
