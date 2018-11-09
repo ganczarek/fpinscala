@@ -58,5 +58,12 @@ object Option {
   def sequence[A](a: List[Option[A]]): Option[List[A]] =
     a.foldRight(Some(Nil: List[A]): Option[List[A]])((optA, b) => optA.flatMap(a => b.map(list => list.::(a))))
 
-  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = sys.error("todo")
+  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = a match {
+    case Nil => Some(Nil)
+    // I could use map2
+    case head :: tail => for {
+      bVal <- f(head)
+      bValList <- traverse(tail)(f)
+    } yield bVal :: bValList
+  }
 }

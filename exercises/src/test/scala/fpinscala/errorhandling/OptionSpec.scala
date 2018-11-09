@@ -102,5 +102,19 @@ class OptionSpec extends FlatSpec with Matchers {
     Option.sequence(List(Some(1), Some(2), Some(3))) shouldBe Some(List(1, 2, 3))
   }
 
+  behavior of "Exercise 4.5"
+
+  "Option.traverse" should "return empty list for an empty list" in {
+    Option.traverse(List())(_ => None) shouldBe Some(List())
+  }
+
+  "Option.traverse" should "return None if one of objects map to None" in {
+    Option.traverse(List(1, 2, 3, 4))(a => if (a == 2) None else Some(a)) shouldBe None
+  }
+
+  "Option.traverse" should "return Option with a list of mapped values, when nothing mapped to None" in {
+    Option.traverse(List(1, 2, 3, 4))(a => Some(a * 2)) shouldBe Some(List(2, 4, 6, 8))
+  }
+
 
 }
