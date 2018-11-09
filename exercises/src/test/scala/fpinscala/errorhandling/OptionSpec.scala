@@ -54,4 +54,15 @@ class OptionSpec extends FlatSpec with Matchers {
     None.filter(_ => false) shouldBe None
   }
 
+  behavior of "Exercise 4.2"
+
+  "Option.variance" should "return None for empty list" in {
+    Option.variance(Seq()) shouldBe None
+  }
+
+  "Option.variance" should "return variance for non empty list" in {
+    val testSeq = Seq(1.0, 1.0, -1.0, -1.0) // mean is 0 and all values 1 away from it
+    Option.variance(testSeq) shouldBe Some(1.0)
+  }
+
 }
