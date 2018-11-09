@@ -46,4 +46,24 @@ class EitherSpec extends FlatSpec with Matchers {
     Right(2).map2(Right(5.0))(_ * _) shouldBe Right(10.0)
   }
 
+  behavior of "Exercise 4.7"
+
+  "Either.sequence" should "return first Left object in a sequence" in {
+    Either.sequence(List(Left(1), Left(2), Left(3))) shouldBe Left(1)
+    Either.sequence(List(Right(1), Left(2), Left(3))) shouldBe Left(2)
+    Either.sequence(List(Right(1), Right(2), Left(3))) shouldBe Left(3)
+  }
+
+  "Either.sequence" should "return wrapper list of Right values when no Left values" in {
+    Either.sequence(List(Right(1), Right(2), Right(3))) shouldBe Right(List(1, 2, 3))
+  }
+
+  "Either.traverse" should "return first Left returned by map function" in {
+    Either.traverse(List(1, 2, 3))(a => Left(a)) shouldBe Left(1)
+  }
+
+  "Either.traverse" should "return list of mapped values wrapped in Right object, if no Left objects" in {
+    Either.traverse(List(1, 2, 3))(a => Right(a * 2)) shouldBe Right(List(2, 4, 6))
+  }
+
 }
