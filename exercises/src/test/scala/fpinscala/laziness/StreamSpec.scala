@@ -130,4 +130,11 @@ class StreamSpec extends FlatSpec with Matchers {
     Stream.constant(2).take(7).toList shouldBe List(2, 2, 2, 2, 2, 2, 2)
   }
 
+  behavior of "Exercise 5.9"
+
+  "Stream.from" should "return infinite stream of increasing integers" in {
+    Stream.from(10).take(5).toList shouldBe List(10, 11, 12, 13, 14)
+    Stream.from(2).take(3).toList shouldBe List(2, 3, 4)
+  }
+
 }
