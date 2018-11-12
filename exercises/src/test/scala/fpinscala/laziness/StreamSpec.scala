@@ -72,7 +72,6 @@ class StreamSpec extends FlatSpec with Matchers {
     Stream(1, 2, 3, 4).takeWhileWithFoldRight(_ < 3).toList shouldBe List(1, 2)
   }
 
-
   behavior of "Exercise 5.6"
 
   "Stream.headOption" should "return None if stream is empty" in {
@@ -81,6 +80,47 @@ class StreamSpec extends FlatSpec with Matchers {
 
   "Stream.headOption" should "return head of the stream" in {
     Stream(1, 2, 3).headOption shouldBe Some(1)
+  }
+
+  behavior of "Exercise 5.7"
+
+  "Stream.map" should "return empty stream, when empty" in {
+    Stream().map(_.toString) shouldBe Stream()
+  }
+
+  "Stream.map" should "map all stream elements" in {
+    Stream(1, 2, 3).map(_.toString).toList shouldBe List("1", "2", "3")
+  }
+
+  "Stream.filter" should "return empty stream, when empty" in {
+    Stream().filter(_ => true) shouldBe Stream()
+  }
+
+  "Stream.filter" should "filter out all elements not matching a predicate" in {
+    Stream(4, 1, 3, 2).filter(_ > 2).toList shouldBe List(4, 3)
+  }
+
+  "Stream.append" should "append a stream to an empty stream in non-strict way" in {
+    Stream().append(Stream(12)).toList shouldBe List(12)
+  }
+
+  "Stream.append" should "append one stream to another" in {
+    Stream(1, 2, 3).append(Stream(4, 5, 6)).toList shouldBe List(1, 2, 3, 4, 5, 6)
+  }
+
+  "Stream.append" should "append Stream[A] and Stream[B], when B is supertype of A" in {
+    val testStream = Stream[List[Int]](List(1, 2), List(3))
+    val streamToAppend = Stream[Seq[Int]](Seq(4))
+    val expectedStream = Stream(Seq(1, 2), Seq(3), Seq(4))
+    testStream.append(streamToAppend).toList shouldBe expectedStream.toList
+  }
+
+  "Stream.flatMap" should "return empty stream, when empty" in {
+    Stream().flatMap(a => Stream(a.toString)) shouldBe Stream()
+  }
+
+  "Stream.flatMap" should "map and flatten stream elements" in {
+    Stream(1, 2, 3).flatMap(a => Stream(a, a)).toList shouldBe List(1, 1, 2, 2, 3, 3)
   }
 
 }
