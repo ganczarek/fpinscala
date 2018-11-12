@@ -178,4 +178,55 @@ class StreamSpec extends FlatSpec with Matchers {
     Stream.ones_1().take(5).toList shouldBe List(1, 1, 1, 1, 1)
     Stream.ones_1().take(3).toList shouldBe List(1, 1, 1)
   }
+
+  behavior of "Exercise 5.13"
+
+  "Stream.mapWithUnfold" should "map values in a stream" in {
+    Stream(1, 2, 3).mapWithUnfold(_.toString).toList shouldBe List("1", "2", "3")
+  }
+
+  "Stream.takeWithUnfold" should "return empty stream when taking zero elements" in {
+    Stream(1, 2, 3).takeWithUnfold(0) shouldBe Empty
+  }
+
+  "Stream.takeWithUnfold" should "return first n elements of a stream" in {
+    Stream(1, 2, 3, 4, 5).takeWithUnfold(2).toList shouldBe List(1, 2)
+  }
+
+  "Stream.takeWithUnfold" should "return an empty stream, if we take 0 elements" in {
+    Stream(1, 2, 3, 4, 5).takeWithUnfold(0) shouldBe Empty
+  }
+
+  "Stream.takeWithUnfold" should "return an entire stream, if we take all or more elements" in {
+    Stream(1, 2, 3, 4, 5).takeWithUnfold(5).toList shouldBe List(1, 2, 3, 4, 5)
+    Stream(1, 2, 3, 4, 5).takeWithUnfold(20).toList shouldBe List(1, 2, 3, 4, 5)
+  }
+
+  "Stream.takeWhileWithUnfold" should "return all starting elements that match a predicate" in {
+    Stream(1, 2, 3, 4).takeWhileWithUnfold(_ < 3).toList shouldBe List(1, 2)
+  }
+
+  "Stream.zipWith" should "zip two stream" in {
+    Stream(1, 2, 3).zipWith(Stream(1, 2)).toList shouldBe List((1, 1), (2, 2))
+    Stream(1, 2).zipWith(Stream(1, 2, 3)).toList shouldBe List((1, 1), (2, 2))
+    Stream(1, 2, 3).zipWith(Stream(1, 2, 3)).toList shouldBe List((1, 1), (2, 2), (3, 3))
+  }
+
+  "Stream.zipAllWithUnfold" should "zip all elements in two streams, when stream is shorter" in {
+    Stream(1, 2).zipAllWithUnfold(Stream(5, 6, 7)).toList shouldBe List(
+      (Some(1), Some(5)), (Some(2), Some(6)), (None, Some(7))
+    )
+  }
+
+  "Stream.zipAllWithUnfold" should "zip all elements in two streams, when stream is longer" in {
+    Stream(1, 2, 3).zipAllWithUnfold(Stream(5, 6)).toList shouldBe List(
+      (Some(1), Some(5)), (Some(2), Some(6)), (Some(3), None)
+    )
+  }
+
+  "Stream.zipAllWithUnfold()" should "zip all elements in two streams, when stream are of equal length" in {
+    Stream(1, 2, 3).zipAllWithUnfold(Stream(5, 6, 7)).toList shouldBe List(
+      (Some(1), Some(5)), (Some(2), Some(6)), (Some(3), Some(7))
+    )
+  }
 }
