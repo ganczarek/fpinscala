@@ -258,4 +258,21 @@ class StreamSpec extends FlatSpec with Matchers {
   "Stream.tails" should "return a stream of suffixes of the input sequences" in {
     Stream(1, 2, 3).tails.toList.map(_.toList) shouldBe List(List(1, 2, 3), List(2, 3), List(3), List())
   }
+
+  behavior of "Exercise 5.16"
+
+  "Stream.scanRight" should "return do foldRight on all tails of a stream" in {
+    val testStream = Stream(1, 2, 3)
+    val foldInitValue = 0
+    val foldFunction: (Int, => Int) => Int = _ + _
+
+    val testResult = testStream.scanRight(foldInitValue)(foldFunction)
+    val expectedResult = testStream.tails.map(s => s.foldRight(foldInitValue)(foldFunction))
+
+    testResult.toList shouldBe expectedResult.toList
+  }
+
+  "Stream.scanRight" should "generate same values as in the example in the book" in {
+    Stream(1, 2, 3).scanRight(0)(_ + _).toList shouldBe List(6, 5, 3, 0)
+  }
 }

@@ -98,6 +98,16 @@ trait Stream[+A] {
     case s => Some(s -> (s drop 1))
   } append Stream(Empty)
 
+  // we cannot use tails, since it uses unfold, which constructs streams from left to right (we would evaluate elements
+  // multiple times).
+  def scanRight[B](z: B)(f: (A, => B) => B): Stream[B] =
+    // foldRight will add values starting from right (from the last element)
+    foldRight((z, Stream(z)))((a, b) => {
+      lazy val lazyState = b // make sure b is evaluated only once (it's passed by-name and used as by-name arg)
+      val nextValue = f(a, lazyState._1) // calculate next value in the result stream
+      (nextValue, cons(nextValue, lazyState._2))
+    })._2
+
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
