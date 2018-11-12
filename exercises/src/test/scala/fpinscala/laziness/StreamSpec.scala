@@ -229,4 +229,23 @@ class StreamSpec extends FlatSpec with Matchers {
       (Some(1), Some(5)), (Some(2), Some(6)), (Some(3), Some(7))
     )
   }
+
+  behavior of "Exercise 5.14"
+
+  "Stream.startsWith" should "work fine with empty streams" in {
+    Stream(1, 2, 3) startsWith Stream() shouldBe true
+    Stream() startsWith Stream() shouldBe true
+    Stream() startsWith Stream(1, 2) shouldBe false
+  }
+
+  "Stream.startsWith" should "return false when stream doesn't start with given stream" in {
+    Stream(1, 2, 3) startsWith Stream(2, 3, 1) shouldBe false
+    Stream(1, 2) startsWith Stream(1, 2, 3) shouldBe false
+  }
+
+  "Stream.startsWith" should "return true when stream does start with given stream" in {
+    Stream(1, 2, 3) startsWith Stream(1) shouldBe true
+    Stream(1, 2, 3) startsWith Stream(1, 2) shouldBe true
+    Stream(1, 2, 3) startsWith Stream(1, 2, 3) shouldBe true
+  }
 }
