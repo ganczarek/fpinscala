@@ -73,4 +73,14 @@ class StreamSpec extends FlatSpec with Matchers {
   }
 
 
+  behavior of "Exercise 5.6"
+
+  "Stream.headOption" should "return None if stream is empty" in {
+    Stream().headOption shouldBe None
+  }
+
+  "Stream.headOption" should "return head of the stream" in {
+    Stream(1, 2, 3).headOption shouldBe Some(1)
+  }
+
 }
