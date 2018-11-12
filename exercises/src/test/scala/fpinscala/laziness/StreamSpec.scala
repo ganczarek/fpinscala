@@ -66,6 +66,11 @@ class StreamSpec extends FlatSpec with Matchers {
     x shouldBe 2
   }
 
+  behavior of "Exercise 5.5"
+
+  "Stream.takeWhileWithFoldRight" should "return all starting elements that match a predicate" in {
+    Stream(1, 2, 3, 4).takeWhileWithFoldRight(_ < 3).toList shouldBe List(1, 2)
+  }
 
 
 }
