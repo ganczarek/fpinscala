@@ -48,4 +48,24 @@ class StreamSpec extends FlatSpec with Matchers {
     Stream(1, 2, 3, 4).takeWhile(_ < 3).toList shouldBe List(1, 2)
   }
 
+  behavior of "Exercise 5.4"
+
+  "Stream.forAll" should "return true for empty stream" in {
+    Stream().forAll(_ => false) shouldBe true
+  }
+
+  "Stream.forAll" should "should evaluate all elements, when predicate matches all of them" in {
+    var x = 0
+    Stream( () => {x=x+1; 1}, () => {x=x+1; 2}, () => {x=x+1; 3}).forAll(z => z() > 0) shouldBe true
+    x shouldBe 3
+  }
+
+  "Stream.forAll" should "should evaluate elements till first predicate failure" in {
+    var x = 0
+    Stream( () => {x=x+1; 1}, () => {x=x+1; -2}, () => {x=x+1; 3}).forAll(z => z() > 0) shouldBe false
+    x shouldBe 2
+  }
+
+
+
 }
