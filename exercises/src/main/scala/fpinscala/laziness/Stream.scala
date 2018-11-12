@@ -89,7 +89,9 @@ object Stream {
     fibs_1(0,1)
   }
 
-  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = sys.error("todo")
+  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = {
+    f(z) map { case (value, state) => cons(value, unfold(state)(f)) } getOrElse empty[A]
+  }
 
   def constant[A](a: A): Stream[A] = cons(a, constant(a))
 }

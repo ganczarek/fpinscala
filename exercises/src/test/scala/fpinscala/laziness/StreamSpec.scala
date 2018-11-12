@@ -143,4 +143,19 @@ class StreamSpec extends FlatSpec with Matchers {
     Stream.fibs().take(8).toList shouldBe List(0, 1, 1, 2, 3, 5, 8, 13)
   }
 
+  behavior of "Exercise 5.11"
+
+  "Stream.unfold" should "unfold an infinite stream" in {
+    val startState: Int = 4
+    val nextState = (s: Int) => s + 2
+    val stateValue = (s: Int) => s * 2
+    val testStream = Stream.unfold(startState)(state => Some((stateValue(state), nextState(state))))
+
+    testStream.take(4).toList shouldBe List(8, 12, 16, 20)
+  }
+
+  "Stream.unfold" should "unfold a finite stream" in {
+    Stream.unfold(0)(s => if (s < 4) Some((s, s + 1)) else None).toList shouldBe List(0, 1, 2, 3)
+  }
+
 }
