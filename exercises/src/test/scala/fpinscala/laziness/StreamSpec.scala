@@ -248,4 +248,14 @@ class StreamSpec extends FlatSpec with Matchers {
     Stream(1, 2, 3) startsWith Stream(1, 2) shouldBe true
     Stream(1, 2, 3) startsWith Stream(1, 2, 3) shouldBe true
   }
+
+  behavior of "Exercise 5.15"
+
+  "Stream.tails" should "return an empty stream as a tail of an empty stream" in {
+    Stream().tails.toList.map(_.toList) shouldBe List(List())
+  }
+
+  "Stream.tails" should "return a stream of suffixes of the input sequences" in {
+    Stream(1, 2, 3).tails.toList.map(_.toList) shouldBe List(List(1, 2, 3), List(2, 3), List(3), List())
+  }
 }
