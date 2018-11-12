@@ -158,4 +158,24 @@ class StreamSpec extends FlatSpec with Matchers {
     Stream.unfold(0)(s => if (s < 4) Some((s, s + 1)) else None).toList shouldBe List(0, 1, 2, 3)
   }
 
+  behavior of "Exercise 5.12"
+
+  "Stream.fibs_1" should "return infinite stream of Fibonacci numbers" in {
+    Stream.fibs_1().take(8).toList shouldBe List(0, 1, 1, 2, 3, 5, 8, 13)
+  }
+
+  "Stream.from_1" should "return infinite stream of increasing integers" in {
+    Stream.from_1(10).take(5).toList shouldBe List(10, 11, 12, 13, 14)
+    Stream.from_1(2).take(3).toList shouldBe List(2, 3, 4)
+  }
+
+  "Stream.constant_1" should "return infinite stream of the same values" in {
+    Stream.constant_1(5).take(5).toList shouldBe List(5, 5, 5, 5, 5)
+    Stream.constant_1(2).take(7).toList shouldBe List(2, 2, 2, 2, 2, 2, 2)
+  }
+
+  "Stream.ones_1" should "return infinite stream of 1s" in {
+    Stream.ones_1().take(5).toList shouldBe List(1, 1, 1, 1, 1)
+    Stream.ones_1().take(3).toList shouldBe List(1, 1, 1)
+  }
 }

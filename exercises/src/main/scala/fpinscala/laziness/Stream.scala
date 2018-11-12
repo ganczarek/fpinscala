@@ -84,9 +84,10 @@ object Stream {
 
   def from(n: Int): Stream[Int] = cons(n, from(n + 1))
 
-  def fibs():Stream[Int] = {
-    def fibs_1(a:Int, b:Int): Stream[Int] = cons(a, fibs_1(b, a+b))
-    fibs_1(0,1)
+  def fibs(): Stream[Int] = {
+    def fibs_1(a: Int, b: Int): Stream[Int] = cons(a, fibs_1(b, a + b))
+
+    fibs_1(0, 1)
   }
 
   def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = {
@@ -94,4 +95,12 @@ object Stream {
   }
 
   def constant[A](a: A): Stream[A] = cons(a, constant(a))
+
+  def fibs_1(): Stream[Int] = unfold((0, 1, 1))(state => Some((state._1, (state._2, state._3, state._2 + state._3))))
+
+  def constant_1[A](a: A): Stream[A] = unfold(a)(s => Some(s, s))
+
+  def ones_1(): Stream[Int] = unfold(1)(_ => Some(1, 1))
+
+  def from_1(n: Int): Stream[Int] = unfold(n)(s => Some(s, s + 1))
 }
