@@ -123,4 +123,11 @@ class StreamSpec extends FlatSpec with Matchers {
     Stream(1, 2, 3).flatMap(a => Stream(a, a)).toList shouldBe List(1, 1, 2, 2, 3, 3)
   }
 
+  behavior of "Exercise 5.8"
+
+  "Stream.constant" should "return infinite stream of the same values" in {
+    Stream.constant(5).take(5).toList shouldBe List(5, 5, 5, 5, 5)
+    Stream.constant(2).take(7).toList shouldBe List(2, 2, 2, 2, 2, 2, 2)
+  }
+
 }
