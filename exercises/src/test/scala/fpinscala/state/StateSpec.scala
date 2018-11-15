@@ -86,7 +86,7 @@ class StateSpec extends FlatSpec with Matchers {
 
   behavior of "Exercise 6.4"
 
-  "RNG.ints" should "return empty list and the same RNG for 0 elemnts" in {
+  "RNG.ints" should "return empty list and the same RNG for 0 elements" in {
     RNG.ints(0)(Simple(10)) shouldBe(List(), Simple(10))
   }
 
@@ -120,5 +120,11 @@ class StateSpec extends FlatSpec with Matchers {
     testCases foreach {
       case (testValue, expectedValue) => RNG.doubleWithMap(TestRNG(testValue)) shouldBe(expectedValue, Simple(-999))
     }
+  }
+
+  behavior of "Exercise 6.6"
+
+  "RNG.map2" should "combine results according to provided function" in {
+    RNG.map2(_.nextInt, _.nextInt)(_ + _)(TestRNG(10, TestRNG(12))) shouldBe(22, Simple(-999))
   }
 }
