@@ -5,8 +5,8 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class StateSpec extends FlatSpec with Matchers {
 
-  case class TestRNG(value: Int) extends RNG {
-    override def nextInt: (Int, RNG) = (value, Simple(-999))
+  case class TestRNG(value: Int, nextRng: RNG = Simple(-999)) extends RNG {
+    override def nextInt: (Int, RNG) = (value, nextRng)
   }
 
   behavior of "Exercise 6.1"
@@ -46,6 +46,41 @@ class StateSpec extends FlatSpec with Matchers {
 
     testCases foreach {
       case (testValue, expectedValue) => RNG.double(TestRNG(testValue)) shouldBe(expectedValue, Simple(-999))
+    }
+  }
+
+  behavior of "Exercise 6.3"
+
+  "RNG.intDouble" should "return (Int,Double) tuple" in {
+    RNG.intDouble(TestRNG(0, TestRNG(0))) shouldBe((0, 0.0), Simple(-999))
+    RNG.intDouble(TestRNG(-10, TestRNG(-1))) shouldBe((-10, 0.0), Simple(-999))
+  }
+
+  "RNG.doubleInt" should "return (Double,Int) tuple" in {
+    RNG.doubleInt(TestRNG(0, TestRNG(0))) shouldBe((0.0, 0.0), Simple(-999))
+    RNG.doubleInt(TestRNG(-10, TestRNG(-1))) shouldBe((0.0, -10), Simple(-999))
+  }
+
+  "RNG.double3" should "use different RNG in each step" in {
+    RNG.double3(TestRNG(0, TestRNG(0, TestRNG(0)))) shouldBe((0.0, 0.0, 0.0), Simple(-999))
+  }
+
+  "RNG.double3" should "return three doubles" in {
+    RNG.double3(Simple(10)) match {
+      case ((d1, d2, d3), rng) =>
+        d1 shouldBe a[java.lang.Double]
+        d1 >= 0 shouldBe true
+        d1 < 1 shouldBe true
+
+        d2 shouldBe a[java.lang.Double]
+        d2 >= 0 shouldBe true
+        d2 < 1 shouldBe true
+
+        d3 shouldBe a[java.lang.Double]
+        d3 >= 0 shouldBe true
+        d3 < 1 shouldBe true
+
+        rng shouldBe a[RNG]
     }
   }
 }
