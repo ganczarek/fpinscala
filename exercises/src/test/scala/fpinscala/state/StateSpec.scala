@@ -9,6 +9,8 @@ class StateSpec extends FlatSpec with Matchers {
     override def nextInt: (Int, RNG) = (value, nextRng)
   }
 
+  def buildTestRNG(l: List[Int]): RNG = l.foldRight(Simple(-999): RNG)((i, acc) => TestRNG(i, acc))
+
   behavior of "Exercise 6.1"
 
   "RNG.nonNegativeInt" should "return negative int" in {
@@ -52,17 +54,17 @@ class StateSpec extends FlatSpec with Matchers {
   behavior of "Exercise 6.3"
 
   "RNG.intDouble" should "return (Int,Double) tuple" in {
-    RNG.intDouble(TestRNG(0, TestRNG(0))) shouldBe((0, 0.0), Simple(-999))
-    RNG.intDouble(TestRNG(-10, TestRNG(-1))) shouldBe((-10, 0.0), Simple(-999))
+    RNG.intDouble(buildTestRNG(List(0, 0))) shouldBe((0, 0.0), Simple(-999))
+    RNG.intDouble(buildTestRNG(List(-10, 0))) shouldBe((-10, 0.0), Simple(-999))
   }
 
   "RNG.doubleInt" should "return (Double,Int) tuple" in {
-    RNG.doubleInt(TestRNG(0, TestRNG(0))) shouldBe((0.0, 0.0), Simple(-999))
-    RNG.doubleInt(TestRNG(-10, TestRNG(-1))) shouldBe((0.0, -10), Simple(-999))
+    RNG.doubleInt(buildTestRNG(List(0, 0))) shouldBe((0.0, 0.0), Simple(-999))
+    RNG.doubleInt(buildTestRNG(List(-10, 0))) shouldBe((0.0, -10), Simple(-999))
   }
 
   "RNG.double3" should "use different RNG in each step" in {
-    RNG.double3(TestRNG(0, TestRNG(0, TestRNG(0)))) shouldBe((0.0, 0.0, 0.0), Simple(-999))
+    RNG.double3(buildTestRNG(List(0, 0, 0))) shouldBe((0.0, 0.0, 0.0), Simple(-999))
   }
 
   "RNG.double3" should "return three doubles" in {
@@ -98,7 +100,7 @@ class StateSpec extends FlatSpec with Matchers {
   }
 
   "RNG.ints" should "use different RNG for each step" in {
-    RNG.ints(3)(TestRNG(1, TestRNG(2, TestRNG(3, TestRNG(4))))) shouldBe(List(1, 2, 3), TestRNG(4))
+    RNG.ints(3)(buildTestRNG(List(1, 2, 3, 4))) shouldBe(List(1, 2, 3), TestRNG(4))
   }
 
   behavior of "Exercise 6.5"
@@ -124,14 +126,14 @@ class StateSpec extends FlatSpec with Matchers {
   behavior of "Exercise 6.6"
 
   "RNG.map2" should "combine results according to provided function" in {
-    RNG.map2(_.nextInt, _.nextInt)(_ + _)(TestRNG(10, TestRNG(12))) shouldBe(22, Simple(-999))
+    RNG.map2(_.nextInt, _.nextInt)(_ + _)(buildTestRNG(List(10, 12))) shouldBe(22, Simple(-999))
   }
 
   behavior of "Exercise 6.7"
 
   "RNG.sequence" should "combine whole list of RNG transitions" in {
     val listOfRands: List[Rand[Int]] = List(_.nextInt, rng => (10, rng), _.nextInt)
-    RNG.sequence(listOfRands)(TestRNG(1, TestRNG(2))) shouldBe (List(1, 10, 2), Simple(-999))
+    RNG.sequence(listOfRands)(buildTestRNG(List(1, 2))) shouldBe(List(1, 10, 2), Simple(-999))
   }
 
   "RNG.intsWithSequence" should "generate list of random integers" in {
@@ -139,6 +141,16 @@ class StateSpec extends FlatSpec with Matchers {
 
     result._1.size shouldBe 5
     result._2 shouldBe a[RNG]
+  }
+
+  behavior of "Exercise 6.8"
+
+  "RNG.flatMap" should "map and flatten" in {
+    RNG.flatMap(_.nextInt)(x => rng => RNG.ints(x)(rng))(buildTestRNG(List(2, 1, 2))) shouldBe(List(1, 2), Simple(-999))
+  }
+
+  "RNG.nonNegativeLessThan" should "return first value being less than given value" in {
+    RNG.nonNegativeLessThan(1)(buildTestRNG(List(10, 5, 0, 1))) shouldBe(0, TestRNG(1))
   }
 
 }
