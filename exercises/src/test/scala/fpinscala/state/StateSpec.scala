@@ -1,6 +1,6 @@
 package fpinscala.state
 
-import fpinscala.state.RNG.Simple
+import fpinscala.state.RNG.{Rand, Simple}
 import org.scalatest.{FlatSpec, Matchers}
 
 class StateSpec extends FlatSpec with Matchers {
@@ -93,7 +93,6 @@ class StateSpec extends FlatSpec with Matchers {
   "RNG.ints" should "generate list of random integers" in {
     val result = RNG.ints(5)(Simple(0))
 
-    result._1 shouldBe a[List[Int]]
     result._1.size shouldBe 5
     result._2 shouldBe a[RNG]
   }
@@ -127,4 +126,19 @@ class StateSpec extends FlatSpec with Matchers {
   "RNG.map2" should "combine results according to provided function" in {
     RNG.map2(_.nextInt, _.nextInt)(_ + _)(TestRNG(10, TestRNG(12))) shouldBe(22, Simple(-999))
   }
+
+  behavior of "Exercise 6.7"
+
+  "RNG.sequence" should "combine whole list of RNG transitions" in {
+    val listOfRands: List[Rand[Int]] = List(_.nextInt, rng => (10, rng), _.nextInt)
+    RNG.sequence(listOfRands)(TestRNG(1, TestRNG(2))) shouldBe (List(1, 10, 2), Simple(-999))
+  }
+
+  "RNG.intsWithSequence" should "generate list of random integers" in {
+    val result = RNG.intsWithSequence(5)(Simple(0))
+
+    result._1.size shouldBe 5
+    result._2 shouldBe a[RNG]
+  }
+
 }
