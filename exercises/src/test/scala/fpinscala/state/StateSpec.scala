@@ -83,4 +83,22 @@ class StateSpec extends FlatSpec with Matchers {
         rng shouldBe a[RNG]
     }
   }
+
+  behavior of "Exercise 6.4"
+
+  "RNG.ints" should "return empty list and the same RNG for 0 elemnts" in {
+    RNG.ints(0)(Simple(10)) shouldBe(List(), Simple(10))
+  }
+
+  "RNG.ints" should "generate list of random integers" in {
+    val result = RNG.ints(5)(Simple(0))
+
+    result._1 shouldBe a[List[Int]]
+    result._1.size shouldBe 5
+    result._2 shouldBe a[RNG]
+  }
+
+  "RNG.ints" should "use different RNG for each step" in {
+    RNG.ints(3)(TestRNG(1, TestRNG(2, TestRNG(3, TestRNG(4))))) shouldBe(List(1, 2, 3), TestRNG(4))
+  }
 }
