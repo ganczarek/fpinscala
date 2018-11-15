@@ -37,7 +37,6 @@ object RNG {
 
   def double(rng: RNG): (Double, RNG) = {
     val (i, rng2) = RNG.nonNegativeInt(rng)
-    System.out.print("wtf " + i, rng2)
     (i / (Int.MaxValue.toDouble + 1), rng2)
   }
 
@@ -67,6 +66,8 @@ object RNG {
     val (l, rng3) = RNG.ints(count - 1)(rng2)
     (i :: l, rng3)
   }
+
+  def doubleWithMap(rng:RNG): (Double, RNG) = map(nonNegativeInt)(_ / (Int.MaxValue.toDouble + 1))(rng)
 
   def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = ???
 

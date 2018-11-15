@@ -101,4 +101,24 @@ class StateSpec extends FlatSpec with Matchers {
   "RNG.ints" should "use different RNG for each step" in {
     RNG.ints(3)(TestRNG(1, TestRNG(2, TestRNG(3, TestRNG(4))))) shouldBe(List(1, 2, 3), TestRNG(4))
   }
+
+  behavior of "Exercise 6.5"
+
+  "RNG.doubleWithMap()" should "return a double between 0 and 1" in {
+    RNG.doubleWithMap(Simple(10)) shouldBe(3847489.toDouble / (Int.MaxValue.toDouble + 1), Simple(252149039181L))
+  }
+
+  "RNG.doubleWithMap()" should "should return double value between 0 and 1 for all edge cases" in {
+    val testCases = List(
+      (0, 0),
+      (-1, 0),
+      (1, 1 / (Int.MaxValue.toDouble + 1)),
+      (-2, 1 / (Int.MaxValue.toDouble + 1)),
+      (Int.MinValue, Int.MaxValue / (Int.MaxValue.toDouble + 1))
+    )
+
+    testCases foreach {
+      case (testValue, expectedValue) => RNG.doubleWithMap(TestRNG(testValue)) shouldBe(expectedValue, Simple(-999))
+    }
+  }
 }
