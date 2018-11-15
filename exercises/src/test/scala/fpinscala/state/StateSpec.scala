@@ -153,4 +153,14 @@ class StateSpec extends FlatSpec with Matchers {
     RNG.nonNegativeLessThan(1)(buildTestRNG(List(10, 5, 0, 1))) shouldBe(0, TestRNG(1))
   }
 
+  behavior of "Exercise 6.9"
+
+  "RNG.mapWithFlatMap" should "map" in {
+    RNG.mapWithFlatMap(_.nextInt)(_.toString)(buildTestRNG(List(1, 2))) shouldBe("1", TestRNG(2))
+  }
+
+  "RNG.map2WithFlatMap" should "combine results according to provided function" in {
+    RNG.map2WithFlatMap(_.nextInt, _.nextInt)(_ + _)(buildTestRNG(List(10, 12))) shouldBe(22, Simple(-999))
+  }
+
 }
