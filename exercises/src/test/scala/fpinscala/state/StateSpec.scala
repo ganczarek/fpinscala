@@ -163,4 +163,25 @@ class StateSpec extends FlatSpec with Matchers {
     RNG.map2WithFlatMap(_.nextInt, _.nextInt)(_ + _)(buildTestRNG(List(10, 12))) shouldBe(22, Simple(-999))
   }
 
+  behavior of "Exercise 6.10"
+
+  "State.unit" should "should return " in {
+    State.unit(1).run("nextState") shouldBe(1, "nextState")
+  }
+
+  "State.map" should "map from one state to another" in {
+    State.unit(1).map(_.toString).run("nextState") shouldBe ("1", "nextState")
+  }
+
+  "State.map2" should "map two states to another" in {
+    val stateA: State[String, Int] = State.unit(1)
+    val stateB: State[String, String] = State(s => (" " + s, "state after " + s))
+
+    stateA.map2(stateB)((i, s) => i.toString + s).run("start") shouldBe ("1 start", "state after start")
+  }
+
+  "State.flatMap" should "map and flatten" in {
+    val stateA: State[String, Int] = State.unit(1)
+    stateA.flatMap(i => State.unit(i*10)).run("nextState") shouldBe (10, "nextState")
+  }
 }
