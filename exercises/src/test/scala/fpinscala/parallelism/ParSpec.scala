@@ -6,7 +6,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class ParSpec extends FlatSpec with Matchers {
 
-  val es: ExecutorService = Executors.newFixedThreadPool(1)
+  val es: ExecutorService = Executors.newFixedThreadPool(2)
 
   behavior of "Exercise 7.4"
 
@@ -24,5 +24,12 @@ class ParSpec extends FlatSpec with Matchers {
     count shouldBe 1
   }
 
+  behavior of "Exercise 7.5"
+
+  "Par.sequence" should "combine list of parallel computations into a computation with list of results" in {
+    val pars = List(Par.unit(10), Par.lazyUnit(10 + 2), Par.unit(1))
+
+    Par.sequence(pars)(es).get shouldBe List(10, 12, 1)
+  }
 
 }
