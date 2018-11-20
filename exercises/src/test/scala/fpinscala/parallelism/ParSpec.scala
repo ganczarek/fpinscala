@@ -32,4 +32,10 @@ class ParSpec extends FlatSpec with Matchers {
     Par.sequence(pars)(es).get shouldBe List(10, 12, 1)
   }
 
+  behavior of "Exercise 7.6"
+
+  "Par.parFilter" should "filter elements" in {
+    Par.parFilter(List(1,6,2,5,3,4))(_ > 3)(es).get shouldBe List(6,5,4)
+  }
+
 }

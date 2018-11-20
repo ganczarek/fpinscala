@@ -60,6 +60,9 @@ object Par {
 
   def sequence[A](ps: List[Par[A]]): Par[List[A]] =
     ps.foldRight[Par[List[A]]](unit(List()))((p, acc) => map2(p, acc)(_ :: _))
+
+  def parFilter[A](as: List[A])(f: A => Boolean): Par[List[A]] =
+    map(sequence(as.map(Par.asyncF(a => Option(a).filter(f)))))(_.flatten)
 }
 
 object Examples {
