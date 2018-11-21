@@ -1,8 +1,8 @@
 package fpinscala.parallelism
 
 import java.util.concurrent.{Callable, CountDownLatch, ExecutorService}
-import java.util.concurrent.atomic.AtomicReference
-import language.implicitConversions
+
+import scala.language.implicitConversions
 
 object Nonblocking {
 
@@ -139,8 +139,7 @@ object Nonblocking {
     def choiceMap[K,V](p: Par[K])(ps: Map[K,Par[V]]): Par[V] = p.flatMap(k => ps(k))
 
     // see `Nonblocking.scala` answers file. This function is usually called something else!
-    def chooser[A,B](p: Par[A])(f: A => Par[B]): Par[B] =
-      ???
+    def chooser[A,B](p: Par[A])(f: A => Par[B]): Par[B] = p flatMap f
 
     def flatMap[A,B](p: Par[A])(f: A => Par[B]): Par[B] =
       es => new Future[B] {
@@ -149,11 +148,9 @@ object Nonblocking {
         }
       }
 
-    def choiceViaChooser[A](p: Par[Boolean])(f: Par[A], t: Par[A]): Par[A] =
-      ???
+    def choiceViaChooser[A](p: Par[Boolean])(f: Par[A], t: Par[A]): Par[A] = p flatMap (if (_) t else f)
 
-    def choiceNChooser[A](p: Par[Int])(choices: List[Par[A]]): Par[A] =
-      ???
+    def choiceNChooser[A](p: Par[Int])(choices: List[Par[A]]): Par[A] = p flatMap (choices(_))
 
     def join[A](p: Par[Par[A]]): Par[A] =
       ???

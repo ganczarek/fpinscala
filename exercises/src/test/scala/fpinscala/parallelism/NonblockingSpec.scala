@@ -41,4 +41,20 @@ class NonblockingSpec extends FlatSpec with Matchers {
     an[NoSuchElementException] should be thrownBy NB.Par.choiceMap(NB.Par.unit("c"))(computations)(es)(_ => ())
   }
 
+  behavior of "Exercise 7.13"
+
+  "Par.chooser" should "allow to choose a parallel computation" in {
+    NB.Par.chooser(NB.Par.unit(2))(a => NB.Par.unit("a" * a))(es)(_ shouldBe "aa")
+  }
+
+  "Par.choiceViaChooser" should " allow to choose between two parallel computations" in {
+    NB.Par.choiceViaChooser(NB.Par.unit(true))(NB.Par.unit("ifTrue"), NB.Par.unit("ifFalse"))(es)(_ shouldBe "ifFalse")
+    NB.Par.choiceViaChooser(NB.Par.unit(false))(NB.Par.unit("ifTrue"), NB.Par.unit("ifFalse"))(es)(_ shouldBe "ifTrue")
+  }
+
+  "Par.choiceNChooser" should "allow to choose parallel computation from given choices" in {
+    val computations = List(NB.Par.unit("a"), NB.Par.unit(1))
+    NB.Par.choiceNChooser(NB.Par.unit(1))(computations)(es)(_ shouldBe 1)
+    NB.Par.choiceNChooser(NB.Par.unit(0))(computations)(es)(_ shouldBe "a")
+  }
 }
