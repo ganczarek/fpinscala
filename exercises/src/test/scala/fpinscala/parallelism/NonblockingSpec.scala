@@ -57,4 +57,20 @@ class NonblockingSpec extends FlatSpec with Matchers {
     NB.Par.choiceNChooser(NB.Par.unit(1))(computations)(es)(_ shouldBe 1)
     NB.Par.choiceNChooser(NB.Par.unit(0))(computations)(es)(_ shouldBe "a")
   }
+
+  behavior of "Exercise 7.14"
+
+  "Par.join" should "flatten nested computations" in {
+    NB.Par.join(NB.Par.unit(NB.Par.unit(10)))(es)(_ shouldBe 10)
+  }
+
+  "Par.joinViaFlatMap" should "flatten nested computations" in {
+    NB.Par.joinViaFlatMap(NB.Par.unit(NB.Par.unit(10)))(es)(_ shouldBe 10)
+  }
+
+  "Par.flatMapViaJoin" should "flatten nested computations" in {
+    NB.Par.flatMapViaJoin(NB.Par.unit(2))(x => NB.Par.unit(10 * x))(es)(_ shouldBe 20)
+  }
+
+
 }
