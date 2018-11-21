@@ -4,15 +4,23 @@ import fpinscala.laziness.Stream
 import fpinscala.state._
 import fpinscala.testing.Prop._
 
-/*
-The library developed in this chapter goes through several iterations. This file is just the
-shell, which you can fill in and modify while working through the chapter.
-*/
-
 object Prop {
   type FailedCase = String
   type SuccessCount = Int
   type TestCases = Int
+  type MaxSize = Int
+
+  sealed trait Result {
+    def isFalsified: Boolean
+  }
+
+  case object Passed extends Result {
+    override def isFalsified: Boolean = false
+  }
+
+  case class Falsified(failure: FailedCase, successes: SuccessCount) extends Result {
+    override def isFalsified: Boolean = true
+  }
 
   def forAll[A](as: Gen[A])(f: A => Boolean): Prop = Prop {
     (n, rng) =>
@@ -25,6 +33,23 @@ object Prop {
       }.find(_.isFalsified).getOrElse(Passed)
   }
 
+  def apply(f: (TestCases, RNG) => Result): Prop = Prop { (_, n, rng) => f(n, rng) }
+
+  def forAll[A](g: SGen[A])(f: A => Boolean): Prop =
+    forAll(g(_))(f)
+
+  def forAll[A](g: Int => Gen[A])(f: A => Boolean): Prop = Prop {
+    (max, n, rng) =>
+      val casesPerSize = (n - 1) / max + 1
+      val props: Stream[Prop] =
+        Stream.from(0).take((n min max) + 1).map(i => forAll(g(i))(f))
+      val prop: Prop =
+        props.map(p => Prop { (max, _, rng) =>
+          p.run(max, casesPerSize, rng)
+        }).toList.reduce(_ && _)
+      prop.run(max, n, rng)
+  }
+
   def randomStream[A](g: Gen[A])(rng: RNG): Stream[A] =
     Stream.unfold(rng)(rng => Some(g.sample.run(rng)))
 
@@ -35,40 +60,27 @@ object Prop {
 
 }
 
-sealed trait Result {
-  def isFalsified: Boolean
-}
-
-case object Passed extends Result {
-  override def isFalsified: Boolean = false
-}
-
-case class Falsified(failure: FailedCase, successes: SuccessCount) extends Result {
-  override def isFalsified: Boolean = true
-}
-
-
-case class Prop(run: (TestCases, RNG) => Result) {
+case class Prop(run: (MaxSize, TestCases, RNG) => Result) {
 
   def &&(prop: Prop): Prop = Prop {
-    (n, rng) =>
-      run(n, rng) match {
-        case Passed => prop.run(n, rng)
+    (max, n, rng) =>
+      run(max, n, rng) match {
+        case Passed => prop.run(max, n, rng)
         case x => x
       }
   }
 
   def ||(prop: Prop): Prop = Prop {
-    (n, rng) =>
-      run(n, rng) match {
-        case x: Falsified => prop.previousFailure(x).run(n, rng)
+    (max, n, rng) =>
+      run(max, n, rng) match {
+        case x: Falsified => prop.previousFailure(x).run(max, n, rng)
         case x => x
       }
   }
 
   def previousFailure(f: Falsified): Prop = Prop {
-    (n, rng) =>
-      run(n, rng) match {
+    (max, n, rng) =>
+      run(max, n, rng) match {
         case Falsified(msg, successCount) => Falsified(f.failure + "\n" + msg, successCount + f.successes)
         case x => x
       }
@@ -107,6 +119,8 @@ object Gen {
 }
 
 case class SGen[+A](forSize: Int => Gen[A]) {
+  def apply(n: Int): Gen[A] = forSize(n)
+
   def map[B](f: A => B): SGen[B] = flatMap(a => SGen.unit(f(a)))
 
   def flatMap[B](f: A => SGen[B]): SGen[B] = SGen {
@@ -115,6 +129,6 @@ case class SGen[+A](forSize: Int => Gen[A]) {
 }
 
 object SGen {
-  def unit[A] (a: => A): SGen[A] = Gen.unit(a).unsized
+  def unit[A](a: => A): SGen[A] = Gen.unit(a).unsized
 }
 

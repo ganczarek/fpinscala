@@ -2,6 +2,7 @@ package fpinscala.testing
 
 import fpinscala.state.RNG
 import fpinscala.state.RNG.Simple
+import fpinscala.testing.Prop.{Falsified, Passed}
 import org.scalatest.{FlatSpec, Matchers}
 
 class GenSpec extends FlatSpec with Matchers {
@@ -83,13 +84,13 @@ class GenSpec extends FlatSpec with Matchers {
     val trueForAll: Int => Boolean = _ < 1000
     val falseForAll: Int => Boolean = _ < 0
 
-    Prop.forAll(g)(trueForAll).run(1000, Simple(1000)) shouldBe Passed
-    Prop.forAll(g)(falseForAll).run(1000, Simple(1000)) shouldBe a[Falsified]
+    Prop.forAll(g)(trueForAll).run(1000, 1000, Simple(1000)) shouldBe Passed
+    Prop.forAll(g)(falseForAll).run(1000, 1000, Simple(1000)) shouldBe a[Falsified]
 
-    (Prop.forAll(g)(trueForAll) && Prop.forAll(g)(trueForAll)).run(1000, Simple(1000)).isFalsified shouldBe false
-    (Prop.forAll(g)(falseForAll) && Prop.forAll(g)(falseForAll)).run(1000, Simple(1000)).isFalsified shouldBe true
-    (Prop.forAll(g)(trueForAll) && Prop.forAll(g)(falseForAll)).run(1000, Simple(1000)).isFalsified shouldBe true
-    (Prop.forAll(g)(falseForAll) && Prop.forAll(g)(trueForAll)).run(1000, Simple(1000)).isFalsified shouldBe true
+    (Prop.forAll(g)(trueForAll) && Prop.forAll(g)(trueForAll)).run(1000, 1000, Simple(1000)).isFalsified shouldBe false
+    (Prop.forAll(g)(falseForAll) && Prop.forAll(g)(falseForAll)).run(1000, 1000, Simple(1000)).isFalsified shouldBe true
+    (Prop.forAll(g)(trueForAll) && Prop.forAll(g)(falseForAll)).run(1000, 1000, Simple(1000)).isFalsified shouldBe true
+    (Prop.forAll(g)(falseForAll) && Prop.forAll(g)(trueForAll)).run(1000, 1000, Simple(1000)).isFalsified shouldBe true
   }
 
   "Prop.||" should "fail only when both props fail" in {
@@ -98,24 +99,26 @@ class GenSpec extends FlatSpec with Matchers {
     val falseForAll: Int => Boolean = _ < 0
 
 
-    Prop.forAll(g)(trueForAll).run(1000, Simple(1000)) shouldBe Passed
-    Prop.forAll(g)(falseForAll).run(1000, Simple(1000)) shouldBe a[Falsified]
+    Prop.forAll(g)(trueForAll).run(1000, 1000, Simple(1000)) shouldBe Passed
+    Prop.forAll(g)(falseForAll).run(1000, 1000, Simple(1000)) shouldBe a[Falsified]
 
-    (Prop.forAll(g)(trueForAll) || Prop.forAll(g)(falseForAll)).run(1000, Simple(1000)).isFalsified shouldBe false
-    (Prop.forAll(g)(falseForAll) || Prop.forAll(g)(falseForAll)).run(1000, Simple(1000)).isFalsified shouldBe true
-    (Prop.forAll(g)(trueForAll) || Prop.forAll(g)(falseForAll)).run(1000, Simple(1000)).isFalsified shouldBe false
-    (Prop.forAll(g)(falseForAll) || Prop.forAll(g)(trueForAll)).run(1000, Simple(1000)).isFalsified shouldBe false
+    (Prop.forAll(g)(trueForAll) || Prop.forAll(g)(falseForAll)).run(1000, 1000, Simple(1000)).isFalsified shouldBe false
+    (Prop.forAll(g)(falseForAll) || Prop.forAll(g)(falseForAll)).run(1000, 1000, Simple(1000)).isFalsified shouldBe true
+    (Prop.forAll(g)(trueForAll) || Prop.forAll(g)(falseForAll)).run(1000, 1000, Simple(1000)).isFalsified shouldBe false
+    (Prop.forAll(g)(falseForAll) || Prop.forAll(g)(trueForAll)).run(1000, 1000, Simple(1000)).isFalsified shouldBe false
   }
 
   behavior of "Exercise 8.10"
 
   "Gen.unsized" should "return SGen" in {
-    Gen.unit(5).unsized shouldBe a[SGen[Int]]
+    Gen.unit(5).unsized shouldBe a[SGen[_]]
   }
 
   behavior of "Exercise 8.12"
 
   "Gen.listOf" should "should generate lists of requested size" in {
-    Gen.listOf(Gen.unit(1)).forSize(10).sample.run(rng)._1 shouldBe List.fill(10)(1)
+    List(100, 10, 5, 1, 0) foreach { n =>
+      Gen.listOf(Gen.unit(1))(n).sample.run(rng)._1 shouldBe List.fill(n)(1)
+    }
   }
 }
