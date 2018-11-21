@@ -10,7 +10,7 @@ class GenSpec extends FlatSpec with Matchers {
     override def nextInt: (Int, RNG) = (value, nextRng)
   }
 
-  val rng = TestRNG(10, TestRNG(11))
+  val rng = TestRNG(10, TestRNG(11, TestRNG(12)))
 
   behavior of "Exercise 8.4"
 
@@ -55,5 +55,12 @@ class GenSpec extends FlatSpec with Matchers {
   "Gen.listOfN" should "give a generator of lists with values from current generator" in {
     Gen.unit(5).listOfN(Gen.unit(3)).sample.run(rng)._1 shouldBe List(5, 5, 5)
     Gen.boolean.listOfN(Gen.unit(2)).sample.run(rng)._1 shouldBe List(true, false)
+  }
+
+  behavior of "Exercise 8.7"
+
+  "Gen.union" should "combine two generators and pull values from each one with equal likelihood" in {
+    Gen.union(Gen.unit(5), Gen.unit(3)).sample.run(rng)._1 shouldBe 5
+    Gen.union(Gen.unit(5), Gen.unit(3)).listOfN(Gen.unit(3)).sample.run(rng)._1 shouldBe List(5, 3, 5)
   }
 }
