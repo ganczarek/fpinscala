@@ -113,4 +113,9 @@ class GenSpec extends FlatSpec with Matchers {
     Gen.unit(5).unsized shouldBe a[SGen[Int]]
   }
 
+  behavior of "Exercise 8.12"
+
+  "Gen.listOf" should "should generate lists of requested size" in {
+    Gen.listOf(Gen.unit(1)).forSize(10).sample.run(rng)._1 shouldBe List.fill(10)(1)
+  }
 }

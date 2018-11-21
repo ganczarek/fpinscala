@@ -102,9 +102,19 @@ object Gen {
 
   def weighted[A](g1: (Gen[A], Double), g2: (Gen[A], Double)): Gen[A] =
     uniform flatMap (d => if (d < g1._2) g1._1 else g2._1)
+
+  def listOf[A](g: Gen[A]): SGen[List[A]] = SGen(n => g.listOfN(Gen.unit(n)))
 }
 
-trait SGen[+A] {
+case class SGen[+A](forSize: Int => Gen[A]) {
+  def map[B](f: A => B): SGen[B] = flatMap(a => SGen.unit(f(a)))
 
+  def flatMap[B](f: A => SGen[B]): SGen[B] = SGen {
+    x => forSize(x).flatMap(f(_).forSize(x))
+  }
+}
+
+object SGen {
+  def unit[A] (a: => A): SGen[A] = Gen.unit(a).unsized
 }
 
