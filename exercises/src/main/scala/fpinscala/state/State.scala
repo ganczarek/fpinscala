@@ -1,5 +1,7 @@
 package fpinscala.state
 
+import fpinscala.state.RNG.{Rand, map2, unit}
+
 
 trait RNG {
   def nextInt: (Int, RNG) // Should generate a random `Int`. We'll later define other functions in terms of `nextInt`.
@@ -128,6 +130,9 @@ object State {
   type Rand[A] = State[RNG, A]
 
   def unit[S, A](a: A): State[S, A] = State(s => (a, s))
+
+  def sequence[S, A](fs: List[State[S, A]]): State[S, List[A]] =
+    fs.foldRight(unit[S, List[A]](List()))((f, acc) => f.map2(acc)(_ :: _))
 
   def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = ???
 }
