@@ -108,6 +108,8 @@ trait Stream[+A] {
       (nextValue, cons(nextValue, lazyState._2))
     })._2
 
+  def zip[B](s2: Stream[B]): Stream[(A,B)] = zipWith(s2)
+
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]

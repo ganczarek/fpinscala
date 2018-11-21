@@ -75,4 +75,35 @@ class GenSpec extends FlatSpec with Matchers {
     val p1 = 12 / (Int.MaxValue.toDouble + 1)
     Gen.weighted((Gen.unit(1), p1), (Gen.unit(2), 1 - p1)).listOfN(Gen.unit(3)).sample.run(rng)._1 shouldBe List(1, 1, 2)
   }
+
+  behavior of "Exercise 8.9"
+
+  "Prop.&&" should "fail when any of props fails" in {
+    val g = Gen.choose(0, 1000)
+    val trueForAll: Int => Boolean = _ < 1000
+    val falseForAll: Int => Boolean = _ < 0
+
+    Prop.forAll(g)(trueForAll).run(1000, Simple(1000)) shouldBe Passed
+    Prop.forAll(g)(falseForAll).run(1000, Simple(1000)) shouldBe a[Falsified]
+
+    (Prop.forAll(g)(trueForAll) && Prop.forAll(g)(trueForAll)).run(1000, Simple(1000)).isFalsified shouldBe false
+    (Prop.forAll(g)(falseForAll) && Prop.forAll(g)(falseForAll)).run(1000, Simple(1000)).isFalsified shouldBe true
+    (Prop.forAll(g)(trueForAll) && Prop.forAll(g)(falseForAll)).run(1000, Simple(1000)).isFalsified shouldBe true
+    (Prop.forAll(g)(falseForAll) && Prop.forAll(g)(trueForAll)).run(1000, Simple(1000)).isFalsified shouldBe true
+  }
+
+  "Prop.||" should "fail only when both props fail" in {
+    val g = Gen.choose(0, 1000)
+    val trueForAll: Int => Boolean = _ < 1000
+    val falseForAll: Int => Boolean = _ < 0
+
+
+    Prop.forAll(g)(trueForAll).run(1000, Simple(1000)) shouldBe Passed
+    Prop.forAll(g)(falseForAll).run(1000, Simple(1000)) shouldBe a[Falsified]
+
+    (Prop.forAll(g)(trueForAll) || Prop.forAll(g)(falseForAll)).run(1000, Simple(1000)).isFalsified shouldBe false
+    (Prop.forAll(g)(falseForAll) || Prop.forAll(g)(falseForAll)).run(1000, Simple(1000)).isFalsified shouldBe true
+    (Prop.forAll(g)(trueForAll) || Prop.forAll(g)(falseForAll)).run(1000, Simple(1000)).isFalsified shouldBe false
+    (Prop.forAll(g)(falseForAll) || Prop.forAll(g)(trueForAll)).run(1000, Simple(1000)).isFalsified shouldBe false
+  }
 }
