@@ -22,6 +22,20 @@ object Prop {
     override def isFalsified: Boolean = true
   }
 
+  def run(p: Prop,
+          maxSize: Int = 100,
+          testCases: Int = 100,
+          rng: RNG = RNG.Simple(System.currentTimeMillis)): Result = {
+    val result = p.run(maxSize, testCases, rng)
+    result match {
+      case Falsified(msg, n) =>
+        println(s"! Falsified after $n passed tests:\n $msg")
+      case Passed =>
+        println(s"+ OK, passed $testCases tests.")
+    }
+    result
+  }
+
   def forAll[A](as: Gen[A])(f: A => Boolean): Prop = Prop {
     (n, rng) =>
       randomStream(as)(rng).zip(Stream.from(0)).take(n).map {
@@ -116,6 +130,8 @@ object Gen {
     uniform flatMap (d => if (d < g1._2) g1._1 else g2._1)
 
   def listOf[A](g: Gen[A]): SGen[List[A]] = SGen(n => g.listOfN(Gen.unit(n)))
+
+  def listOf1[A](g: Gen[A]): SGen[List[A]] = SGen(n => g.listOfN(Gen.unit(n max 1)))
 }
 
 case class SGen[+A](forSize: Int => Gen[A]) {

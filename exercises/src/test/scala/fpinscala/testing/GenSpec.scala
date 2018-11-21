@@ -121,4 +121,20 @@ class GenSpec extends FlatSpec with Matchers {
       Gen.listOf(Gen.unit(1))(n).sample.run(rng)._1 shouldBe List.fill(n)(1)
     }
   }
+
+  behavior of "Exercise 8.13"
+
+  "Prop.run" should "help to run tests" in {
+    val smallInt = Gen.choose(-10,10)
+    val maxProp = Prop.forAll(Gen.listOf1(smallInt)) { ns =>
+      val max = ns.max
+      !ns.exists(_ > max)
+    }
+    Prop.run(maxProp) shouldBe Passed
+  }
+
+  "Prop.listOf1" should "should generate non-empty lists" in {
+    Gen.listOf1(Gen.unit(1))(0).sample.run(rng)._1 shouldBe List(1)
+  }
+
 }
