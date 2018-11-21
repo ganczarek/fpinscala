@@ -131,13 +131,12 @@ object Nonblocking {
           }
       }
 
-    def choiceN[A](p: Par[Int])(ps: List[Par[A]]): Par[A] = Par.flatMap(p)(i => ps(i))
+    def choiceN[A](p: Par[Int])(ps: List[Par[A]]): Par[A] = p.flatMap(i => ps(i))
 
     def choiceViaChoiceN[A](a: Par[Boolean])(ifTrue: Par[A], ifFalse: Par[A]): Par[A] =
       choiceN[A](a.map(b => if(b) 1 else 0))(List(ifFalse, ifTrue))
 
-    def choiceMap[K,V](p: Par[K])(ps: Map[K,Par[V]]): Par[V] =
-      ???
+    def choiceMap[K,V](p: Par[K])(ps: Map[K,Par[V]]): Par[V] = p.flatMap(k => ps(k))
 
     // see `Nonblocking.scala` answers file. This function is usually called something else!
     def chooser[A,B](p: Par[A])(f: A => Par[B]): Par[B] =
@@ -171,6 +170,7 @@ object Nonblocking {
     // infix versions of `map`, `map2`
     class ParOps[A](p: Par[A]) {
       def map[B](f: A => B): Par[B] = Par.map(p)(f)
+      def flatMap[B](f: A => Par[B]): Par[B] = Par.flatMap(p)(f)
       def map2[B,C](b: Par[B])(f: (A,B) => C): Par[C] = Par.map2(p,b)(f)
       def zip[B](b: Par[B]): Par[(A,B)] = p.map2(b)((_,_))
     }
