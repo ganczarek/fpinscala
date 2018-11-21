@@ -44,4 +44,16 @@ class GenSpec extends FlatSpec with Matchers {
     Gen.listOfN(5, Gen.unit(5)).sample.run(rng)._1 shouldBe List(5, 5, 5, 5, 5)
     Gen.listOfN(2, Gen.boolean).sample.run(rng)._1 shouldBe List(true, false)
   }
+
+  behavior of "Exercise 8.6"
+
+  "Gen.flatMap" should "flatten generator of generators" in {
+    Gen.unit(5).flatMap(_ => Gen.boolean).sample.run(rng)._1 shouldBe true
+    Gen.unit(5).flatMap(x => Gen.unit(x + 1)).sample.run(rng)._1 shouldBe 6
+  }
+
+  "Gen.listOfN" should "give a generator of lists with values from current generator" in {
+    Gen.unit(5).listOfN(Gen.unit(3)).sample.run(rng)._1 shouldBe List(5, 5, 5)
+    Gen.boolean.listOfN(Gen.unit(2)).sample.run(rng)._1 shouldBe List(true, false)
+  }
 }
