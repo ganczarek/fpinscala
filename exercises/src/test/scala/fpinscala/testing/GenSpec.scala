@@ -137,4 +137,22 @@ class GenSpec extends FlatSpec with Matchers {
     Gen.listOf1(Gen.unit(1))(0).sample.run(rng)._1 shouldBe List(1)
   }
 
+  behavior of "Exercise 8.14"
+
+  "List.sorted" should "be property-based tested" in {
+    val gen = Gen.choose(-10000, 1000)
+    val sizeDoesNotChange = Prop.forAll(Gen.listOf(gen)) { list => list.size == list.sorted.size }
+    val firstValueMin = Prop.forAll(Gen.listOf1(gen)) { list => list.sorted.head == list.min }
+    val lastValueMax = Prop.forAll(Gen.listOf1(gen)) { list => list.sorted.reverse.head == list.max }
+    val isOrdered = Prop.forAll(Gen.listOf1(gen)) {
+      list => {
+        var passed = true
+        list.sorted.zip(list.sorted.tail) foreach { case (x, y) => if (x > y) passed = false }
+        passed
+      }
+    }
+
+    Prop.run(sizeDoesNotChange && firstValueMin && lastValueMax && isOrdered) shouldBe Passed
+  }
+
 }
