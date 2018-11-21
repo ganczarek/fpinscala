@@ -106,4 +106,11 @@ class GenSpec extends FlatSpec with Matchers {
     (Prop.forAll(g)(trueForAll) || Prop.forAll(g)(falseForAll)).run(1000, Simple(1000)).isFalsified shouldBe false
     (Prop.forAll(g)(falseForAll) || Prop.forAll(g)(trueForAll)).run(1000, Simple(1000)).isFalsified shouldBe false
   }
+
+  behavior of "Exercise 8.10"
+
+  "Gen.unsized" should "return SGen" in {
+    Gen.unit(5).unsized shouldBe a[SGen[Int]]
+  }
+
 }
