@@ -63,4 +63,16 @@ class GenSpec extends FlatSpec with Matchers {
     Gen.union(Gen.unit(5), Gen.unit(3)).sample.run(rng)._1 shouldBe 5
     Gen.union(Gen.unit(5), Gen.unit(3)).listOfN(Gen.unit(3)).sample.run(rng)._1 shouldBe List(5, 3, 5)
   }
+
+  behavior of "Exercise 8.8"
+
+  "Gen.uniform" should "generate values from uniform distribution" in {
+    Gen.uniform.sample.run(rng)._1 shouldBe 10 / (Int.MaxValue.toDouble + 1)
+  }
+
+  "Gen.weighted" should "" in {
+    // because of `rng` outputting low values (10, 11 and 12), first generator is selected as long as value is < 12
+    val p1 = 12 / (Int.MaxValue.toDouble + 1)
+    Gen.weighted((Gen.unit(1), p1), (Gen.unit(2), 1 - p1)).listOfN(Gen.unit(3)).sample.run(rng)._1 shouldBe List(1, 1, 2)
+  }
 }
