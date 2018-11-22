@@ -9,11 +9,7 @@ class ApplicativeSpec extends FlatSpec with Matchers {
   val listApplicative = new Applicative[List] {
     override def unit[A](a: => A): List[A] = List(a)
 
-    override def map2[A, B, C](fa: List[A], fb: List[B])(f: (A, B) => C): List[C] = {
-      for {
-        (a, b) <- fa zip fb
-      } yield f(a, b)
-    }
+    override def map2[A, B, C](fa: List[A], fb: List[B])(f: (A, B) => C): List[C] = fa zip fb map f.tupled
   }
 
   val optionApplicative = new Applicative[Option] {
@@ -96,6 +92,13 @@ class ApplicativeSpec extends FlatSpec with Matchers {
 
   "Applicative.map4" should "map 4 functors" in {
     optionApplicative.map4(Some(1), Some(2), Some(3), Some(4))(_ + _ - _ + _) shouldBe Some(4)
+  }
+
+  behavior of "Exercise 12.4"
+
+  "StreamApplicative.sequence" should "zip streams" in {
+    val sreams = List(Stream(1, 2), Stream("a", "b"), Stream(3, 4))
+    Applicative.streamApplicative.sequence(sreams) shouldBe Stream(List(1, "a", 3), List(2, "b", 4))
   }
 
 }
