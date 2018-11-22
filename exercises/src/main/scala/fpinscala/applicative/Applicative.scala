@@ -38,6 +38,12 @@ trait Applicative[F[_]] extends Functor[F] { self =>
   def compose[G[_]](G: Applicative[G]): Applicative[({type f[x] = F[G[x]]})#f] = ???
 
   def sequenceMap[K,V](ofa: Map[K,F[V]]): F[Map[K,V]] = ???
+
+  def map3[A, B, C, D](fa: F[A], fb: F[B], fc: F[C])(f: (A, B, C) => D): F[D] =
+    apply(apply(apply(unit(f.curried))(fa))(fb))(fc)
+
+  def map4[A, B, C, D, E](fa: F[A], fb: F[B], fc: F[C], fd: F[D])(f: (A, B, C, D) => E): F[E] =
+    apply(apply(apply(apply(unit(f.curried))(fa))(fb))(fc))(fd)
 }
 
 case class Tree[+A](head: A, tail: List[Tree[A]])

@@ -88,4 +88,14 @@ class ApplicativeSpec extends FlatSpec with Matchers {
     listApplicative.apply(List[Int => Int](_ + 1, _ * 10))(List(1, 2)) shouldBe List(2, 20)
   }
 
+  behavior of "Exercise 12.3"
+
+  "Applicative.map3" should "map 3 functors" in {
+    optionApplicative.map3(Some(1), Some(2), Some(3))(_ + _ - _) shouldBe Some(0)
+  }
+
+  "Applicative.map4" should "map 4 functors" in {
+    optionApplicative.map4(Some(1), Some(2), Some(3), Some(4))(_ + _ - _ + _) shouldBe Some(4)
+  }
+
 }
