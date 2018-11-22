@@ -1,34 +1,40 @@
 package fpinscala
 package applicative
 
-import monads.Functor
-import state._
-import State._
-import StateUtil._ // defined at bottom of this file
-import monoids._
-import language.higherKinds
-import language.implicitConversions
+import fpinscala.applicative.StateUtil._
+import fpinscala.monads.Functor
+import fpinscala.monoids._
+import fpinscala.state._
 
-trait Applicative[F[_]] extends Functor[F] {
+import scala.language.{higherKinds, implicitConversions}
 
+trait Applicative[F[_]] extends Functor[F] { self =>
+
+  // primitive combinators
   def map2[A,B,C](fa: F[A], fb: F[B])(f: (A, B) => C): F[C] = ???
 
-  def apply[A,B](fab: F[A => B])(fa: F[A]): F[B] = ???
-
   def unit[A](a: => A): F[A]
+
+  // derived combinators
+  def apply[A,B](fab: F[A => B])(fa: F[A]): F[B] = map2(fab, fa)((aToB, a) => aToB(a))
 
   def map[A,B](fa: F[A])(f: A => B): F[B] =
     apply(unit(f))(fa)
 
-  def sequence[A](fas: List[F[A]]): F[List[A]] = ???
+  def sequence[A](fas: List[F[A]]): F[List[A]] = traverse(fas)(identity)
 
-  def traverse[A,B](as: List[A])(f: A => F[B]): F[List[B]] = ???
+  def traverse[A,B](as: List[A])(f: A => F[B]): F[List[B]] =
+    as.foldRight(unit(List[B]()))((a, acc) => map2(f(a), acc)(_ :: _))
 
-  def replicateM[A](n: Int, fa: F[A]): F[List[A]] = ???
+  def replicateM[A](n: Int, fa: F[A]): F[List[A]] = traverse(List.fill(n)(fa))(identity)
 
-  def factor[A,B](fa: F[A], fb: F[B]): F[(A,B)] = ???
+  def factor[A,B](fa: F[A], fb: F[B]): F[(A,B)] = map2(fa, fb)((_, _))
 
-  def product[G[_]](G: Applicative[G]): Applicative[({type f[x] = (F[x], G[x])})#f] = ???
+  def product[G[_]](G: Applicative[G]): Applicative[({type f[x] = (F[x], G[x])})#f] = new Applicative[({type f[x] = (F[x], G[x])})#f] {
+    override def unit[A](a: => A): (F[A], G[A]) = (self.unit(a), G.unit(a))
+
+    override def map2[A, B, C](fa: (F[A], G[A]), fb: (F[B], G[B]))(f: (A, B) => C): (F[C], G[C]) = ???
+  }
 
   def compose[G[_]](G: Applicative[G]): Applicative[({type f[x] = F[G[x]]})#f] = ???
 
