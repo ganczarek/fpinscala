@@ -52,15 +52,40 @@ class ApplicativeSpec extends FlatSpec with Matchers {
   }
 
   "Applicative.factor" should "zip two lists" in {
-    listApplicative.factor(List(1,2,3), List("a", "b", "c")) shouldBe List((1,"a"), (2, "b"), (3, "c"))
+    listApplicative.factor(List(1, 2, 3), List("a", "b", "c")) shouldBe List((1, "a"), (2, "b"), (3, "c"))
   }
 
   "Applicative.factor" should "combine two optional values" in {
-    optionApplicative.factor(Some(1), Some(2)) shouldBe Some((1,2))
+    optionApplicative.factor(Some(1), Some(2)) shouldBe Some((1, 2))
     optionApplicative.factor(Some(1), None) shouldBe None
     optionApplicative.factor(None, None) shouldBe None
   }
 
+  behavior of "Exercise 12.2"
 
+  val applyAndUnitOptionApplicative = new Applicative[Option] {
+    override def unit[A](a: => A): Option[A] = Option(a)
+
+    override def apply[A, B](fab: Option[A => B])(fa: Option[A]): Option[B] = for {
+      aToB <- fab
+      a <- fa
+    } yield aToB(a)
+  }
+
+  "Applicative.map" should "be implemented in terms of apply and unit" in {
+    applyAndUnitOptionApplicative.map(Some(1))(_ + 2) shouldBe Some(3)
+    applyAndUnitOptionApplicative.map(None)(identity) shouldBe None
+  }
+
+  "Applicative.map2" should "be implemented in terms of apply and unit" in {
+    applyAndUnitOptionApplicative.map2(Some(1), Some(2))(_ + _) shouldBe Some(3)
+    applyAndUnitOptionApplicative.map2(Some(1), None)(_ + _) shouldBe None
+    applyAndUnitOptionApplicative.map2(None, Some(1))((_, _) => ()) shouldBe None
+    applyAndUnitOptionApplicative.map2(None, None)((_, _) => ()) shouldBe None
+  }
+
+  "Applicative.apply" should "be implemented in terms of map2 and unit" in {
+    listApplicative.apply(List[Int => Int](_ + 1, _ * 10))(List(1, 2)) shouldBe List(2, 20)
+  }
 
 }

@@ -11,15 +11,14 @@ import scala.language.{higherKinds, implicitConversions}
 trait Applicative[F[_]] extends Functor[F] { self =>
 
   // primitive combinators
-  def map2[A,B,C](fa: F[A], fb: F[B])(f: (A, B) => C): F[C] = ???
+  def map2[A,B,C](fa: F[A], fb: F[B])(f: (A, B) => C): F[C] = apply(apply(unit(f.curried))(fa))(fb)
 
   def unit[A](a: => A): F[A]
 
   // derived combinators
   def apply[A,B](fab: F[A => B])(fa: F[A]): F[B] = map2(fab, fa)((aToB, a) => aToB(a))
 
-  def map[A,B](fa: F[A])(f: A => B): F[B] =
-    apply(unit(f))(fa)
+  def map[A,B](fa: F[A])(f: A => B): F[B] = apply(unit(f))(fa)
 
   def sequence[A](fas: List[F[A]]): F[List[A]] = traverse(fas)(identity)
 
