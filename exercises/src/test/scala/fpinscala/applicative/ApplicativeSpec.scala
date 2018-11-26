@@ -111,4 +111,22 @@ class ApplicativeSpec extends FlatSpec with Matchers {
     Monad.eitherMonad.map(Left[String,Int]("Error Message"))(_ + 5) shouldBe Left("Error Message")
   }
 
+  behavior of "Exercise 12.6"
+
+  "Validation" should "return value if all validation pass" in {
+    Applicative.validationApplicative.map3(
+      Success(1),
+      Success("2"),
+      Success(3.0)
+    )((_,_,_)) shouldBe Success((1, "2", 3.0))
+  }
+
+  "Validation" should "accumulate errors" in {
+    Applicative.validationApplicative.map3(
+      Failure("head1", Vector("tail1")),
+      Success("2"),
+      Failure("head2", Vector("tail2"))
+    )((_,_,_)) shouldBe Failure("head2", Vector("tail2", "head1", "tail1"))
+  }
+
 }
