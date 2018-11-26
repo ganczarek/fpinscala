@@ -193,4 +193,15 @@ class ApplicativeSpec extends FlatSpec with Matchers {
     Traverse.listTraverse.foldLeft(testList)(0)(_ * _) shouldBe testList.foldLeft(0)(_ * _)
   }
 
+  behavior of "Exercise 12.18"
+
+  "Traverse.fuse" should "traverse once and apply both fused functors" in {
+    implicit val a: Applicative[Option] = optionApplicative
+    implicit val b: Applicative[List] = listApplicative
+
+    val result = Traverse.listTraverse.fuse[Option, List, Int, Int](List(1, 2, 3))(Some(_), List(_))
+
+    result shouldBe(Some(List(1, 2, 3)), List(List(1, 2, 3)))
+  }
+
 }
