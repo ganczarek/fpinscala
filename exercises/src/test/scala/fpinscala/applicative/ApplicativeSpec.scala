@@ -204,4 +204,17 @@ class ApplicativeSpec extends FlatSpec with Matchers {
     result shouldBe(Some(List(1, 2, 3)), List(List(1, 2, 3)))
   }
 
+  behavior of "Exercise 12.19"
+
+  "Traverse.compose" should "traverse nested Traversals" in {
+    implicit val a: Applicative[Option] = optionApplicative
+    implicit val b: Applicative[List] = listApplicative
+
+    val composedTraverse = Traverse.listTraverse.compose(Traverse.optionTraverse)
+    val maybeInts = List(Some(1), None, Some(2))
+    val expected = Some(List(Some(3), None, Some(4)))
+
+    composedTraverse.traverse[Option, Int, Int](maybeInts)(a => Option(a + 2)) shouldBe expected
+  }
+
 }
