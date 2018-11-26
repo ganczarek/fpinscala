@@ -1,25 +1,11 @@
 package fpinscala.applicative
 
+import fpinscala.applicative.Applicative.{listApplicative, optionApplicative}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ApplicativeSpec extends FlatSpec with Matchers {
 
   behavior of "Exercise 12.1"
-
-  val listApplicative = new Applicative[List] {
-    override def unit[A](a: => A): List[A] = List(a)
-
-    override def map2[A, B, C](fa: List[A], fb: List[B])(f: (A, B) => C): List[C] = fa zip fb map f.tupled
-  }
-
-  val optionApplicative = new Applicative[Option] {
-    override def unit[A](a: => A): Option[A] = Option(a)
-
-    override def map2[A, B, C](fa: Option[A], fb: Option[B])(f: (A, B) => C): Option[C] = for {
-      a <- fa
-      b <- fb
-    } yield f(a, b)
-  }
 
   "Applicative.sequence" should "turn list of functors into a functor of a list" in {
     listApplicative.sequence(List(List(1), List(2), List(3))) shouldBe List(List(1, 2, 3))
@@ -108,7 +94,7 @@ class ApplicativeSpec extends FlatSpec with Matchers {
   }
 
   "EitherMonad.map" should "return pass through error message" in {
-    Monad.eitherMonad.map(Left[String,Int]("Error Message"))(_ + 5) shouldBe Left("Error Message")
+    Monad.eitherMonad.map(Left[String, Int]("Error Message"))(_ + 5) shouldBe Left("Error Message")
   }
 
   behavior of "Exercise 12.6"
@@ -118,7 +104,7 @@ class ApplicativeSpec extends FlatSpec with Matchers {
       Success(1),
       Success("2"),
       Success(3.0)
-    )((_,_,_)) shouldBe Success((1, "2", 3.0))
+    )((_, _, _)) shouldBe Success((1, "2", 3.0))
   }
 
   "Validation" should "accumulate errors" in {
@@ -126,7 +112,14 @@ class ApplicativeSpec extends FlatSpec with Matchers {
       Failure("head1", Vector("tail1")),
       Success("2"),
       Failure("head2", Vector("tail2"))
-    )((_,_,_)) shouldBe Failure("head2", Vector("tail2", "head1", "tail1"))
+    )((_, _, _)) shouldBe Failure("head2", Vector("tail2", "head1", "tail1"))
+  }
+
+  behavior of "Exercise 12.8"
+
+  "Applicative.product" should "create a product of two applicatives" in {
+    optionApplicative.product(listApplicative).map(Some(1), List(12))(_ * 2) shouldBe(Some(2), List(24))
+    optionApplicative.product(listApplicative).map(None, List(12))(_ * 2) shouldBe(None, List(24))
   }
 
   behavior of "Exercise 12.9"

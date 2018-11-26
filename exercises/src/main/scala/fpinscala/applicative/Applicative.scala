@@ -32,7 +32,8 @@ trait Applicative[F[_]] extends Functor[F] { self =>
   def product[G[_]](G: Applicative[G]): Applicative[({type f[x] = (F[x], G[x])})#f] = new Applicative[({type f[x] = (F[x], G[x])})#f] {
     override def unit[A](a: => A): (F[A], G[A]) = (self.unit(a), G.unit(a))
 
-    override def map2[A, B, C](fa: (F[A], G[A]), fb: (F[B], G[B]))(f: (A, B) => C): (F[C], G[C]) = ???
+    override def map2[A, B, C](fa: (F[A], G[A]), fb: (F[B], G[B]))(f: (A, B) => C): (F[C], G[C]) =
+      (self.map2(fa._1, fb._1)(f), G.map2(fa._2, fb._2)(f))
   }
 
   def compose[G[_]](G: Applicative[G]): Applicative[({type f[x] = F[G[x]]})#f] = new Applicative[({type f[x] = F[G[x]]})#f] {
@@ -125,6 +126,23 @@ object Applicative {
       def unit[A](a: => A): M = M.zero
       override def apply[A,B](m1: M)(m2: M): M = M.op(m1, m2)
     }
+
+
+  val listApplicative: Applicative[List] = new Applicative[List] {
+    override def unit[A](a: => A): List[A] = List(a)
+
+    override def map2[A, B, C](fa: List[A], fb: List[B])(f: (A, B) => C): List[C] = fa zip fb map f.tupled
+  }
+
+  val optionApplicative: Applicative[Option] = new Applicative[Option] {
+    override def unit[A](a: => A): Option[A] = Option(a)
+
+    override def map2[A, B, C](fa: Option[A], fb: Option[B])(f: (A, B) => C): Option[C] = for {
+      a <- fa
+      b <- fb
+    } yield f(a, b)
+  }
+
 }
 
 trait Traverse[F[_]] extends Functor[F] with Foldable[F] {
