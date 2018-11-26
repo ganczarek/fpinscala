@@ -129,4 +129,10 @@ class ApplicativeSpec extends FlatSpec with Matchers {
     )((_,_,_)) shouldBe Failure("head2", Vector("tail2", "head1", "tail1"))
   }
 
+  behavior of "Exercise 12.9"
+
+  "Applicative.compose" should "compose two applicatives" in {
+    optionApplicative.compose(listApplicative).sequence(List(Some(List(1)), Some(List(2)))) shouldBe Some(List(List(1, 2)))
+    optionApplicative.compose(listApplicative).sequence(List(Some(List(1)), None)) shouldBe None
+  }
 }
