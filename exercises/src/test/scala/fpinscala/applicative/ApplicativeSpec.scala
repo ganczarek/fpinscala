@@ -2,7 +2,7 @@ package fpinscala.applicative
 
 import fpinscala.applicative.Applicative.{listApplicative, optionApplicative}
 import fpinscala.testing.Prop.Passed
-import fpinscala.testing.{Gen, Prop, SGen}
+import fpinscala.testing.{Gen, Prop}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ApplicativeSpec extends FlatSpec with Matchers {
@@ -184,7 +184,13 @@ class ApplicativeSpec extends FlatSpec with Matchers {
     }
 
     Prop.run(prop) shouldBe Passed
+  }
 
+  behavior of "Exercise 12.17"
+
+  "Traverse.foldLeft" should "fold feft with use of mapAccum" in {
+    val testList = List(1, 2, 3, 4, 5, 6, 7, 8)
+    Traverse.listTraverse.foldLeft(testList)(0)(_ * _) shouldBe testList.foldLeft(0)(_ * _)
   }
 
 }
