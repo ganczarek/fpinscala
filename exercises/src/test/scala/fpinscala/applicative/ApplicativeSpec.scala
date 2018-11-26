@@ -217,4 +217,19 @@ class ApplicativeSpec extends FlatSpec with Matchers {
     composedTraverse.traverse[Option, Int, Int](maybeInts)(a => Option(a + 2)) shouldBe expected
   }
 
+  behavior of "Exercise 12.20"
+
+  "Monad.compose" should "allow to compose two monads, when one is traversable" in {
+    val composedMonad = Monad.composeM(Monad.optionMonad, Monad.listMonad, Traverse.listTraverse)
+
+    composedMonad.unit(1) shouldBe Some(List(1))
+    composedMonad.sequence(List(Some(List(1)), Some(List(2, 3)), None)) shouldBe None
+
+    composedMonad.sequence(List(Some(List(1, 2)), Some(List(3, 4)), Some(List(5, 6)))) shouldBe Some(List(
+      List(1, 3, 5), List(1, 3, 6),
+      List(1, 4, 5), List(1, 4, 6),
+      List(2, 3, 5), List(2, 3, 6),
+      List(2, 4, 5), List(2, 4, 6)
+    ))
+  }
 }

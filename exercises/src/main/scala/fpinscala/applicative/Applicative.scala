@@ -2,7 +2,7 @@ package fpinscala
 package applicative
 
 import fpinscala.applicative.StateUtil._
-import fpinscala.monads.Functor
+import fpinscala.monads.{Functor, Monad}
 import fpinscala.monoids._
 import fpinscala.state._
 
@@ -81,14 +81,31 @@ object Monad {
     }
   }
 
+  val optionMonad: Monad[Option] = new Monad[Option] {
+    override def flatMap[A, B](ma: Option[A])(f: A => Option[B]): Option[B] = ma flatMap f
+
+    override def unit[A](a: => A): Option[A] = Option(a)
+  }
+
+  val listMonad: Monad[List] = new Monad[List] {
+    override def flatMap[A, B](ma: List[A])(f: A => List[B]): List[B] = ma flatMap f
+
+    override def unit[A](a: => A): List[A] = List(a)
+  }
+
+
   def stateMonad[S] = new Monad[({type f[x] = State[S, x]})#f] {
     def unit[A](a: => A): State[S, A] = State(s => (a, s))
     override def flatMap[A,B](st: State[S, A])(f: A => State[S, B]): State[S, B] =
       st flatMap f
   }
 
-  def composeM[F[_],N[_]](implicit F: Monad[F], N: Monad[N], T: Traverse[N]):
-    Monad[({type f[x] = F[N[x]]})#f] = ???
+  def composeM[F[_],N[_]](implicit F: Monad[F], N: Monad[N], T: Traverse[N]): Monad[({type f[x] = F[N[x]]})#f] =
+    new Monad[({type f[x] = F[N[x]]})#f] {
+      override def unit[A](a: => A): F[N[A]] = F.unit(N.unit(a))
+      override def flatMap[A, B](ma: F[N[A]])(f: A => F[N[B]]): F[N[B]] =
+        F.flatMap(ma)(na => F.map(T.traverse(na)(f))(N.join))
+    }
 }
 
 sealed trait Validation[+E, +A]
