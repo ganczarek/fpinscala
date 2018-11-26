@@ -136,4 +136,37 @@ class ApplicativeSpec extends FlatSpec with Matchers {
     optionApplicative.sequenceMap(Map("1" -> Some(1), "2" -> None)) shouldBe None
   }
 
+  behavior of "Exercise 12.13 and 12.14"
+
+  "Traverse.listTraverse.sequence" should "return None if any of the inputs of a list is None" in {
+    Traverse.listTraverse.sequence(List(Some(1), None, Some(2)))(optionApplicative) shouldBe None
+    Traverse.listTraverse.sequence(List(None))(optionApplicative) shouldBe None
+  }
+
+  "Traverse.listTraverse.sequence" should "return list with all values, if there are no None" in {
+    Traverse.listTraverse.sequence[Option, Int](List(Some(1), Some(2), Some(3)))(optionApplicative) shouldBe Some(List(1, 2, 3))
+    Traverse.listTraverse.sequence[Option, Int](List(Some(1)))(optionApplicative) shouldBe Some(List(1))
+  }
+
+  "Traverse.optionTraverse.sequence" should "return list with None if option is None" in {
+    Traverse.optionTraverse.sequence(None)(listApplicative) shouldBe List(None)
+    Traverse.optionTraverse.sequence(None)(listApplicative) shouldBe List(None)
+  }
+
+  "Traverse.optionTraverse.sequence" should "return first element from a list wrapped in Some, when not a None" in {
+    Traverse.optionTraverse.sequence(Some(List(1, 2, 3)))(listApplicative) shouldBe List(Some(1))
+  }
+
+  "Traverse.treeTraverse.sequence" should "return None, if tree contains a None" in {
+    Traverse.treeTraverse.sequence(Tree(Some(1), List(Tree(Some(1), Nil), Tree(None, Nil))))(optionApplicative) shouldBe None
+    Traverse.treeTraverse.sequence(Tree(None, Nil))(optionApplicative) shouldBe None
+  }
+
+  "Traverse.treeTraverse.sequence" should "return entire tree wrapped in Option, if tree does not contain a None" in {
+    val treeOfOptions = Tree(Some(1), List(Tree(Some(2), Nil), Tree(Some(3), Nil)))
+    val treeWrappedInOption = Some(Tree(1, List(Tree(2, Nil), Tree(3, Nil))))
+
+    Traverse.treeTraverse.sequence[Option, Int](treeOfOptions)(optionApplicative) shouldBe treeWrappedInOption
+  }
+
 }
