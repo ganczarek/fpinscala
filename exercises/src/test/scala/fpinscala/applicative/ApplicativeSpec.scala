@@ -128,4 +128,12 @@ class ApplicativeSpec extends FlatSpec with Matchers {
     optionApplicative.compose(listApplicative).sequence(List(Some(List(1)), Some(List(2)))) shouldBe Some(List(List(1, 2)))
     optionApplicative.compose(listApplicative).sequence(List(Some(List(1)), None)) shouldBe None
   }
+
+  behavior of "Exercise 12.12"
+
+  "Applicative.sequenceMap" should "perform sequence over Map" in {
+    optionApplicative.sequenceMap(Map("1" -> Some(1), "2" -> Some(2))) shouldBe Some(Map("1" -> 1, "2" -> 2))
+    optionApplicative.sequenceMap(Map("1" -> Some(1), "2" -> None)) shouldBe None
+  }
+
 }

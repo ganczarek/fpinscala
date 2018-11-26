@@ -43,7 +43,10 @@ trait Applicative[F[_]] extends Functor[F] { self =>
       self.map2(fga, fgb)((ga, gb) => G.map2(ga, gb)(f))
   }
 
-  def sequenceMap[K,V](ofa: Map[K,F[V]]): F[Map[K,V]] = ???
+  def sequenceMap[K,V](ofa: Map[K,F[V]]): F[Map[K,V]] = traverseMap(ofa)(identity)
+
+  def traverseMap[K, A, B](mka: Map[K, A])(f: A => F[B]): F[Map[K, B]] =
+    mka.foldRight(unit(Map[K, B]())) { case ((k, a), acc) => map2(acc, f(a))((accMap, b) => accMap + (k -> b)) }
 
   def map3[A, B, C, D](fa: F[A], fb: F[B], fc: F[C])(f: (A, B, C) => D): F[D] =
     apply(apply(apply(unit(f.curried))(fa))(fb))(fc)
@@ -126,7 +129,6 @@ object Applicative {
       def unit[A](a: => A): M = M.zero
       override def apply[A,B](m1: M)(m2: M): M = M.op(m1, m2)
     }
-
 
   val listApplicative: Applicative[List] = new Applicative[List] {
     override def unit[A](a: => A): List[A] = List(a)
