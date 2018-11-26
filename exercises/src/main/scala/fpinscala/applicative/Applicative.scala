@@ -53,6 +53,8 @@ trait Monad[F[_]] extends Applicative[F] {
 
   def join[A](mma: F[F[A]]): F[A] = flatMap(mma)(ma => ma)
 
+  override def map[A, B](m: F[A])(f: A => B): F[B] = flatMap(m)(a => unit(f(a)))
+
   def compose[A,B,C](f: A => F[B], g: B => F[C]): A => F[C] =
     a => flatMap(f(a))(g)
 
@@ -61,7 +63,14 @@ trait Monad[F[_]] extends Applicative[F] {
 }
 
 object Monad {
-  def eitherMonad[E]: Monad[({type f[x] = Either[E, x]})#f] = ???
+  def eitherMonad[E]: Monad[({type f[x] = Either[E, x]})#f] = new Monad[({type f[x] = Either[E, x]})#f] {
+    override def unit[A](a: => A): Either[E, A] = Right(a)
+
+    override def flatMap[A, B](ma: Either[E, A])(f: A => Either[E, B]): Either[E, B] = ma match {
+      case Right(a) => f(a)
+      case Left(x) => Left(x)
+    }
+  }
 
   def stateMonad[S] = new Monad[({type f[x] = State[S, x]})#f] {
     def unit[A](a: => A): State[S, A] = State(s => (a, s))

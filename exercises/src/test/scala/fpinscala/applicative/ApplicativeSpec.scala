@@ -101,4 +101,14 @@ class ApplicativeSpec extends FlatSpec with Matchers {
     Applicative.streamApplicative.sequence(sreams) shouldBe Stream(List(1, "a", 3), List(2, "b", 4))
   }
 
+  behavior of "Exercise 12.5"
+
+  "EitherMonad.map" should "map right value when present" in {
+    Monad.eitherMonad.map(Right(10))(_ + 5) shouldBe Right(15)
+  }
+
+  "EitherMonad.map" should "return pass through error message" in {
+    Monad.eitherMonad.map(Left[String,Int]("Error Message"))(_ + 5) shouldBe Left("Error Message")
+  }
+
 }
