@@ -1,6 +1,8 @@
 package fpinscala.applicative
 
 import fpinscala.applicative.Applicative.{listApplicative, optionApplicative}
+import fpinscala.testing.Prop.Passed
+import fpinscala.testing.{Gen, Prop, SGen}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ApplicativeSpec extends FlatSpec with Matchers {
@@ -167,6 +169,22 @@ class ApplicativeSpec extends FlatSpec with Matchers {
     val treeWrappedInOption = Some(Tree(1, List(Tree(2, Nil), Tree(3, Nil))))
 
     Traverse.treeTraverse.sequence[Option, Int](treeOfOptions)(optionApplicative) shouldBe treeWrappedInOption
+  }
+
+  behavior of "Exercise 12.16"
+
+  "Traverse.reverse" should "reverse any functor" in {
+    import Traverse.listTraverse.{reverse, toList}
+
+    val listGenerator = Gen.listOf(Gen.choose(-100, 100))
+    val gen = listGenerator ** listGenerator
+
+    val prop = Prop.forAll(gen) {
+      case (x, y) => toList(reverse(x)) ++ toList(reverse(y)) == reverse(toList(y) ++ toList(x))
+    }
+
+    Prop.run(prop) shouldBe Passed
+
   }
 
 }
