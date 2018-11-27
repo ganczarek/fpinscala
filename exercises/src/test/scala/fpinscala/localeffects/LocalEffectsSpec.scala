@@ -20,7 +20,7 @@ class LocalEffectsSpec extends FlatSpec with Matchers {
         } yield (a, b, c)
     }
 
-    ST.runST(p) shouldBe ("A", "b", "default")
+    ST.runST(p) shouldBe("A", "b", "default")
   }
 
   behavior of "Exercise 14.2"
@@ -41,5 +41,61 @@ class LocalEffectsSpec extends FlatSpec with Matchers {
 
     Immutable.quicksort(list) should not be list
     list shouldBe List(1, 4, 2, 6, 3, 1)
+  }
+
+  behavior of "Exercise 14.3"
+
+  "STMap" should "allow to read a value" in {
+    ST.runST(new RunnableST[String] {
+      override def apply[S]: ST[S, String] =
+        for {
+          x <- STMap(Map(1 -> "A", 2 -> "B", 3 -> "C"))
+          b <- x(2)
+        } yield b
+    }) shouldBe "B"
+  }
+
+  "STMap" should "allow to get optional value" in {
+    ST.runST(new RunnableST[(Option[String], Option[String])] {
+      override def apply[S]: ST[S, (Option[String], Option[String])] =
+      for {
+        x <- STMap(Map(1 -> "A", 2 -> "B", 3 -> "C"))
+        b <- x.get(2)
+        d <- x.get(20)
+      } yield (b, d)
+    }) shouldBe(Some("B"), None)
+  }
+
+  "STMap" should "allow to write a value" in {
+    ST.runST(new RunnableST[String] {
+      override def apply[S]: ST[S, String] =
+        for {
+          x <- STMap(Map(1 -> "A", 2 -> "B", 3 -> "C"))
+          _ <- x += (10, "Y")
+          y <- x(10)
+        } yield y
+    }) shouldBe "Y"
+  }
+
+  "STMap" should "allow to freeze the map" in {
+    ST.runST(new RunnableST[Map[Int, String]] {
+      override def apply[S]: ST[S, Map[Int, String]] =
+        for {
+          x <- STMap(Map(1 -> "A", 2 -> "B", 3 -> "C"))
+          _ <- x += (10, "Y")
+          y <- x.freeze
+        } yield y
+    }) shouldBe Map(1 -> "A", 2 -> "B", 3 -> "C", 10 -> "Y")
+  }
+
+  "STMap" should "allow to remove a value" in {
+    ST.runST(new RunnableST[Map[Int, String]] {
+      override def apply[S]: ST[S, Map[Int, String]] =
+        for {
+          x <- STMap(Map(1 -> "A", 2 -> "B", 3 -> "C"))
+          _ <- x -= 2
+          y <- x.freeze
+        } yield y
+    }) shouldBe Map(1 -> "A", 3 -> "C")
   }
 }

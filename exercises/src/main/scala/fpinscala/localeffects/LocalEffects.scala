@@ -162,3 +162,30 @@ object Immutable {
     })
 }
 
+import scala.collection.mutable
+
+sealed abstract class STMap[S, K, V] {
+  protected def hashMap: mutable.HashMap[K, V]
+
+  def size: ST[S, Int] = ST(hashMap.size)
+
+  def +=(key: K, value: V): ST[S, Unit] = {
+    val kv = (key, value)
+    ST(hashMap += kv)
+  }
+
+  def apply(key: K): ST[S, V] = ST(hashMap(key))
+
+  def get(key: K): ST[S, Option[V]] = ST(hashMap.get(key))
+
+  def freeze: ST[S, Map[K, V]] = ST(hashMap.toMap)
+
+  def -=(key: K): ST[S, Unit] = ST(hashMap -= key)
+}
+
+object STMap {
+  def apply[S, K, V](m: Map[K, V]): ST[S, STMap[S, K, V]] =
+    ST(new STMap[S, K, V] {
+      lazy val hashMap: mutable.HashMap[K, V] = mutable.HashMap(m.toList: _*)
+    })
+}
